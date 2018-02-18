@@ -7,6 +7,7 @@ void ExploreIdx()
 {
 	unsigned int const block_idx = blockIdx.x;
 	unsigned int const thread_idx = threadIdx.x;
+	mexPrintf("This is block (%d,%d,%d)", block_idx.x, block_idx.y, block_idx.z);
 } 
 
 void Reinitialization(void){
@@ -14,7 +15,7 @@ void Reinitialization(void){
 
 	// 
 	dim3 const dimBlock(1,1,1);
-	dim3 const dimThread(2,3,1);
+	dim3 const dimThread(2,1,1);
 
 	ExploreIdx<<<dimBlock,dimThread>>>();
 }
