@@ -10,7 +10,15 @@ void ExploreIdx()
 	//mexPrintf("This is block (%d)", blockIdx.x);
 } 
 
-void Reinitialization(void){
+/*
+ * reinitialization scheme
+ * re_lsf : pointer to reinitialized level set function
+ * lsf : pointer to input level set function
+ */
+void Reinitialization(double * re_lsf, double const * lsf, 
+	int const rows, int const cols, int const pages, 
+	double const dx, double const dy, double const dz)
+{
 	mexPrintf("hello cuda!\n");
 
 	// 
