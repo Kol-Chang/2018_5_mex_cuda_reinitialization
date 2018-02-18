@@ -7,7 +7,7 @@ void ExploreIdx()
 {
 	unsigned int const block_idx = blockIdx.x;
 	unsigned int const thread_idx = threadIdx.x;
-	mexPrintf("This is block (%d,%d,%d)", block_idx.x, block_idx.y, block_idx.z);
+	printf("This is block (%d,%d,%d)", block_idx.x, block_idx.y, block_idx.z);
 } 
 
 void Reinitialization(void){
