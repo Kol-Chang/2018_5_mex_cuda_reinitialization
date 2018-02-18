@@ -2,7 +2,7 @@
 #include "mexcudaReinitialization.hpp"
 
 // enumerate input index
-enum Input {
+enum Input{
 	level_set_function = 0,
 	grid_spacing = 1
 };
