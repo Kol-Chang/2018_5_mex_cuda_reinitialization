@@ -20,6 +20,8 @@ void Reinitialization(double * re_lsf, double const * lsf,
 	double const dx, double const dy, double const dz)
 {
 	mexPrintf("hello cuda!\n");
+	mexPrintf("dimension array:(%d,%d,%d)\n",rows,cols,pages);
+	mexPrintf("grid spacing:(%d,%d,%d)\n",dx,dy,dz);
 
 	// 
 	dim3 const dimBlock(1,1,1);
