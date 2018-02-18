@@ -28,7 +28,7 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 	int dimx = rows, dimy = 4, dimz = 1;
 	dim3 const block(dimx, dimy, dimz);
 	//dim3 const grid((rows + block.x - 1) / block.x, (cols + block.y - 1) / block.y, (pages + block.z - 1) / block.z);
-	dim const grid(1,1,128);
+	dim3 const grid(1,1,128);
 
 	mexPrintf("block dimension (%d,%d,%d)\n", block.x, block.y, block.z);
 	mexPrintf("grid dimension (%d,%d,%d)\n", grid.x, grid.y, grid.z);
