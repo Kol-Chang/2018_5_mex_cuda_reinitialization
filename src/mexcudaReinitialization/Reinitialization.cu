@@ -17,7 +17,8 @@ void Reinitialization(void){
 	dim3 const dimBlock(1,1,1);
 	dim3 const dimThread(2,1,1);
 
-	mexPrintf("Block dimension (%d)\n", dimBlock.x);
+	mexPrintf("Block dimension (%d,%d,%d)\n", dimBlock.x, dimBlock.y, dimBlock.z);
+	mexPrintf("Thread dimension (%d,%d,%d)\n", dimThread.x, dimThread.y, dimThread.z);
 
 	ExploreIdx<<<dimBlock,dimThread>>>();
 }
