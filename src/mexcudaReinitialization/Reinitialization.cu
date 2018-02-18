@@ -32,4 +32,10 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 	mexPrintf("Thread dimension (%d,%d,%d)\n", dimThread.x, dimThread.y, dimThread.z);
 
 	ExploreIdx<<<dimBlock,dimThread>>>();
+
+	double * dev_lsf;
+	cudaMalloc((void **)&dev_lsf, sizeof(double)*number_of_elements_lsf);
+
+	cudaFree(dev_lsf);
+
 }
