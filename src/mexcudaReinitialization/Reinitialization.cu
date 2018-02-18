@@ -25,25 +25,40 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 	mexPrintf("grid spacing:(%f,%f,%f)\n",dx,dy,dz);
 
 	// 
-	dim3 const dimBlock(1,1,1);
-	dim3 const dimThread(2,1,1);
+	int dimx = rows, dimy = 4, dimz = 1;
+	dim3 const block(dimx, dimy, dimz);
+	dim3 const grid((rows + block.x - 1) / block.x, (cols + block.y - 1) / block.y, (pages + block.z - 1) / block.z);
 
-	mexPrintf("Block dimension (%d,%d,%d)\n", dimBlock.x, dimBlock.y, dimBlock.z);
-	mexPrintf("Thread dimension (%d,%d,%d)\n", dimThread.x, dimThread.y, dimThread.z);
+	mexPrintf("block dimension (%d,%d,%d)\n", block.x, block.y, block.z);
+	mexPrintf("grid dimension (%d,%d,%d)\n", grid.x, grid.y, grid.z);
 
 	ExploreIdx<<<dimBlock,dimThread>>>();
 
+	// allocate memory for input lsf and out put level set function
 	double * dev_lsf, *dev_re_lsf;
 	cudaMalloc((void **)&dev_lsf, sizeof(double)*number_of_elements_lsf);
 	cudaMalloc((void **)&dev_re_lsf, sizeof(double)*number_of_elements_lsf);
 
 	cudaMemcpy((void *)dev_lsf, lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyHostToDevice);
-	cudaMemset((void *)dev_re_lsf, (int)1, sizeof(double)*number_of_elements_lsf);
+	cudaMemset((void *)dev_re_lsf, (int)0, sizeof(double)*number_of_elements_lsf);
 
 
+	// copy results back 
 	cudaMemcpy(re_lsf, (void *)dev_re_lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyDeviceToHost);
 
 	cudaFree(dev_lsf);
 	cudaFree(dev_re_lsf);
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
