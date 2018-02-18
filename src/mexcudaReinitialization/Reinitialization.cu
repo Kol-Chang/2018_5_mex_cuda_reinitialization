@@ -32,7 +32,7 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 	mexPrintf("block dimension (%d,%d,%d)\n", block.x, block.y, block.z);
 	mexPrintf("grid dimension (%d,%d,%d)\n", grid.x, grid.y, grid.z);
 
-	ExploreIdx<<<dimBlock,dimThread>>>();
+	ExploreIdx<<<grid,block>>>();
 
 	// allocate memory for input lsf and out put level set function
 	double * dev_lsf, *dev_re_lsf;
