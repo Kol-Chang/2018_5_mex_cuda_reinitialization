@@ -64,7 +64,7 @@ void mexFunction(int nlhs, mxArray * plhs[], int nrhs, mxArray const * prhs[])
 	//  finish creating output array
 
 	// calling computation routine
-	Reinitialization(re_lsf, lsf, dimension_array[0], dimension_array[1], dimension_array[2], ds[0], ds[1], ds[2]);
+	Reinitialization(re_lsf, lsf, number_of_elements_lsf, dimension_array[0], dimension_array[1], dimension_array[2], ds[0], ds[1], ds[2]);
 }
 
 

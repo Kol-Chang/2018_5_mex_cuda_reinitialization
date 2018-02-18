@@ -15,11 +15,12 @@ void ExploreIdx()
  * re_lsf : pointer to reinitialized level set function
  * lsf : pointer to input level set function
  */
-void Reinitialization(double * re_lsf, double const * lsf, 
+void Reinitialization(double * re_lsf, double const * lsf, int const number_of_elements_lsf,
 	int const rows, int const cols, int const pages, 
 	double const dx, double const dy, double const dz)
 {
 	mexPrintf("hello cuda!\n");
+	mexPrintf("number of elements : %d\n", number_of_elements_lsf);
 	mexPrintf("dimension array:(%d,%d,%d)\n",rows,cols,pages);
 	mexPrintf("grid spacing:(%f,%f,%f)\n",dx,dy,dz);
 
