@@ -41,7 +41,7 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 	cudaMemset((void *)dev_re_lsf, (int)0, sizeof(double)*number_of_elements_lsf);
 
 
-	cudaMemcpy(re_lsf, (void *)dev_re_lsf, sizeof(double)*number_of_elements_lsf);
+	cudaMemcpy(re_lsf, (void *)dev_re_lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyDeviceToHost);
 
 	cudaFree(dev_lsf);
 	cudaFree(dev_re_lsf);
