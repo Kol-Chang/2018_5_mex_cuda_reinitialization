@@ -1,5 +1,5 @@
 %
-mexcuda mexcudaReinitialization.cu Reinitialization.cu
+%mexcuda mexcudaReinitialization.cu Reinitialization.cu
 
 % test mexcudaReinitialization scheme
 
