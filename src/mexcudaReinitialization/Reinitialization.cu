@@ -3,7 +3,7 @@
 #include <cuda_runtime_api.h>
 
 __global__ 
-void ExploreIdx()
+void ExploreIdx(double * dev_re_lsf, double const * const dev_lsf)
 {
 	unsigned int const block_idx = blockIdx.x;
 	unsigned int const thread_idx = threadIdx.x;
@@ -27,22 +27,23 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 	// 
 	int dimx = rows, dimy = 4, dimz = 1;
 	dim3 const block(dimx, dimy, dimz);
-	//dim3 const grid((rows + block.x - 1) / block.x, (cols + block.y - 1) / block.y, (pages + block.z - 1) / block.z);
-	dim3 const grid(1,1,128);
+	dim3 const grid((rows + block.x - 1) / block.x, (cols + block.y - 1) / block.y, (pages + block.z - 1) / block.z);
 
 	mexPrintf("block dimension (%d,%d,%d)\n", block.x, block.y, block.z);
 	mexPrintf("grid dimension (%d,%d,%d)\n", grid.x, grid.y, grid.z);
 
-	ExploreIdx<<<grid,block>>>();
-
 	// allocate memory for input lsf and out put level set function
-	double * dev_lsf, *dev_re_lsf;
+	double * dev_lsf, * dev_re_lsf;
 	cudaMalloc((void **)&dev_lsf, sizeof(double)*number_of_elements_lsf);
 	cudaMalloc((void **)&dev_re_lsf, sizeof(double)*number_of_elements_lsf);
 
-	cudaMemcpy((void *)dev_lsf, lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyHostToDevice);
-	cudaMemset((void *)dev_re_lsf, (int)0, sizeof(double)*number_of_elements_lsf);
+	// record information 
+	//bool * dev_mask, * dev_mxr, * dev_mxl, * dev_myf, * dev_myb, * dev_mzu, * dev_mzd;
 
+	cudaMemcpy((void *)dev_lsf, lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyHostToDevice);
+	//cudaMemset((void *)dev_re_lsf, (int)0, sizeof(double)*number_of_elements_lsf);
+
+	ExploreIdx<<<grid,block>>>(dev_re_lsf, dev_lsf);
 
 	// copy results back 
 	cudaMemcpy(re_lsf, (void *)dev_re_lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyDeviceToHost);
