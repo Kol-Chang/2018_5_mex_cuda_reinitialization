@@ -15,7 +15,7 @@ void ExploreIdx(double * const dev_re_lsf, double const * const dev_lsf, int con
 	if(idx > number_of_elements_lsf)
 		return;
 
-	dev_re_lsf[idx] = dev_lsf[idx];
+	dev_re_lsf[idx] = 2 * dev_lsf[idx];
 } 
 
 /*
