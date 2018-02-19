@@ -1,11 +1,14 @@
 %
 %mexcuda mexcudaReinitialization.cu Reinitialization.cu
 
-addpath(genpath('..'))
+
 
 % test mexcudaReinitialization scheme
 
 % 
+
+addpath(genpath('..'))
+
 xv = linspace(-5,5,64);
 yv = xv;
 zv = xv;
