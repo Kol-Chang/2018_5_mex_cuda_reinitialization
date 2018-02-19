@@ -159,7 +159,7 @@ void explore(double * out, double * in, int number_of_elements_lsf, int rows, in
 	if(idx > number_of_elements_lsf-1)
 		return;
 
-	out[idx] = in[idx];
+	out[idx] = 2*  in[idx];
 }
 
 __global__ 
