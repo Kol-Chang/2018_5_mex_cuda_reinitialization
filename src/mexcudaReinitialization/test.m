@@ -1,6 +1,8 @@
 %
 %mexcuda mexcudaReinitialization.cu Reinitialization.cu
 
+addpath(genpath('..'))
+
 % test mexcudaReinitialization scheme
 
 	% 
