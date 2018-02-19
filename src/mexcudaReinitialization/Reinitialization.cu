@@ -359,7 +359,7 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 	}
 
 	for(int i = 0;i < 10; i++){
-		mexPrintf("dev_lsf[%d] : %f \n", i, re_lsf[i] );
+		mexPrintf("dev_lsf[%d] : %f \n", i, lsf[i] );
 	}
 
 	cudaFree(dev_lsf);
