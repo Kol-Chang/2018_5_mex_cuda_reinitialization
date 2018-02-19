@@ -94,7 +94,9 @@ void boundary_correction(double * const dev_xpr, double * const dev_ypf, double 
 
 	dev_xpr[idx] = dx;
 	int idx_right = sub2ind(row_idx, (col_idx < (cols-1)) ? col_idx+1 : col_idx+1-cols, pge_idx, rows, cols, pages );	
-	double f2 = dev_lsf[idx_right]; // grad the right node
+	double f2 = dev_lsf[idx_right]; // grab the right node
+
+	double p2;
 
 	if(f0*f2 < 0) // if there is a boundary to the right
 	{
@@ -103,7 +105,7 @@ void boundary_correction(double * const dev_xpr, double * const dev_ypf, double 
 
 		double p2xl = dev_lsf[idx_left] - 2.0 * f0 + f2; // 2nd difference on the left node
 		double p2xr = f0 - 2.0 * f2 + dev_lsf[idx_2right]; // 2nd difference on the right node
-		double p2 = min_mod(p2xl, p2xr);
+		p2 = min_mod(p2xl, p2xr);
 		if(p2>epislon){
 			dev_xpr[idx] = dist(discriminant(p2,f0,f2),dx,p2,f0,f2);
 		} else{
@@ -114,9 +116,43 @@ void boundary_correction(double * const dev_xpr, double * const dev_ypf, double 
 	// fill in dev_ypf
 	dev_ypf[idx] = dy;
 	int idx_front = sub2ind( (row_idx < (rows-1)) ? row_idx+1 : row_idx+1-rows, col_idx, pge_idx, rows, cols, pages);
+	f2 = dev_lsf[idx_front]; // grab the front node value
+
+	if(f0*f2 < 0) // if there is a boundary to the front
+	{
+		int idx_back = sub2ind( (row_idx > 0) ? row_idx-1 : row_idx-1+rows, col_idx, pge_idx, rows, cols, pages );
+		int idx_2front = sub2ind( (row_idx < (rows-2)) ? row_idx+2 : row_idx+2-rows, col_idx, pge_idx, rows, cols, pages );
+
+		double p2yb = dev_lsf[idx_back] - 2.0 * f0 + f2;
+		double p2yf = f0 - 2.0 * f2 + dev_lsf[idx_2front];
+		p2 = min_mod(p2yb, p2yf);
+		if(p2>epislon){
+			dev_ypf[idx] = dist(discriminant(p2,f0,f2),dy,p2,f0,f2);
+		}else{
+			dev_ypf[idx] = dist_turn(dy,f0,f2);
+		}
+	}
 
 	// fill in dev_zpu
 	dev_zpu[idx] = dz;
+	int idx_upper = sub2ind( row_idx, col_idx, (pge_idx < (pages-1)) ? pge_idx+1 : pge_idx+1-pages, rows, cols, pages );
+	f2 = dev_lsf[idx_upper]; // grab the upper node value
+
+	if(f0*f2 < 0) // if there is a boundary to the upper side
+	{
+		int idx_lower = sub2ind(row_idx, col_idx, (pge_idx > 0) ? pge_idx-1: pge_idx-1+pages, rows, cols, pages);
+		int idx_2upper = sub2ind( row_idx, col_idx, (pge_idx < (pages-2)) ? pge_idx+2 : pge_idx+2-pages, rows, cols, pages );
+
+		double p2zd = dev_lsf[idx_lower] - 2.0 * f0 + f2;
+		double p2zu = f0 - 2.0 * f2 + dev_lsf(idx_2upper);
+		p2 = min_mod(p2zd, p2zu);
+		if(p2>epislon){
+			dev_zpu[idx] = dist(discriminant(p2,f0,f2),dz,p2,f0,f2);
+		}else{
+			dev_ypf[idx] = dist_turn(dz,f0,f2);
+		}
+	}
+
 }
 
 /*
