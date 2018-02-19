@@ -1,6 +1,7 @@
 % test the mexReinitialization scheme
 
 addpath(genpath('mexcudaReinitialization'))
+addpath(genpath('mexReinitialization'))
 %path_test % test if  I can call function from another folder
 
 
@@ -48,7 +49,8 @@ addpath(genpath('mexcudaReinitialization'))
 					   'sooz', int32(map.GD3.sooz-1));
 
 	%tic
-	map.F=mexcudaReinitialization(map.F, [dx, dy, dz]);
+	%map.F=mexcudaReinitialization(map.F, [dx, dy, dz]);
+	map.F = mexReinitialization(map.F, shift_mat,[map.GD3.Dx,map.GD3.Dy,map.GD3.Dz]);
 	%toc
 
 	map.plotSurface(0,1,'g')
@@ -94,6 +96,7 @@ eng = figure('Name', 'energy/volume/area vs time');
 %
 tic
  for ii = 1:loops-1
+ 	ii
  %for ii = 1:0
 	%tic;
 
@@ -177,8 +180,8 @@ tic
 		disp(['volume error before reinitialization ', num2str(ii), ': ', num2str(cur_vol_BR/map.En_Volume)]);
 	%tic;
 		%map.reinitialization( reshape(F_new, map.GD3.Size) );
-		%map.F = mexReinitialization(map.F, shift_mat,[map.GD3.Dx,map.GD3.Dy,map.GD3.Dz]);
-		map.F = mexcudaReinitialization(map.F, [dx, dy, dz]);
+		map.F = mexReinitialization(map.F, shift_mat,[map.GD3.Dx,map.GD3.Dy,map.GD3.Dz]);
+		%map.F = mexcudaReinitialization(map.F, [dx, dy, dz]);
 	%disp('reini time');
 	%toc;
 	end
@@ -195,7 +198,7 @@ tic
 		text(map.GD3.xmin,map.GD3.ymax,(map.GD3.zmax+map.GD3.zmin)/2,['BR',num2str(ii),':',time])
 		drawnow
 
-		DistanceMap = map.F;
+		%DistanceMap = map.F;
 		%saveas(gcf, fullfile(Pic,[num2str(ii),'AA_BR','.png']))
 		%saveas(gcf, fullfile(Pic,[num2str(ii),'AA_BR','.fig']))
 		%save(fullfile(Mat,['DFV',num2str(ii),'AA_BR','.mat']),'DistanceMap')
