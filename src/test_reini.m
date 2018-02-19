@@ -49,7 +49,7 @@ addpath(genpath('mexReinitialization'))
 					   'sooz', int32(map.GD3.sooz-1));
 
 	%tic
-	map.F=mexcudaReinitialization(map.F, [dx, dy, dz]);
+	%map.F=mexcudaReinitialization(map.F, [dx, dy, dz]);
 	%map.F = mexReinitialization(map.F, shift_mat,[map.GD3.Dx,map.GD3.Dy,map.GD3.Dz]);
 	%toc
 
@@ -77,8 +77,8 @@ addpath(genpath('mexReinitialization'))
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  map.plotSurface(0,1,'g')
 
- loops = 100;
- Skip = 1;
+ loops = 1000;
+ Skip = 20;
  SkipR = 1;
  Dt = 2 * map.GD3.Dx ^ 4 / Kappa; % it is more like Dt*zeta(the drag coefficient)
 
@@ -181,7 +181,7 @@ tic
 	%tic;
 		%map.reinitialization( reshape(F_new, map.GD3.Size) );
 		%map.F = mexReinitialization(map.F, shift_mat,[map.GD3.Dx,map.GD3.Dy,map.GD3.Dz]);
-		map.F = mexcudaReinitialization(map.F, [dx, dy, dz]);
+		map.F = mexcudaReinitialization(map.F, [map.GD3.Dx,map.GD3.Dy,map.GD3.Dz]);
 	%disp('reini time');
 	%toc;
 	end
