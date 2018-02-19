@@ -315,6 +315,7 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 	cudaMemcpy((void *)dev_lsf, lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyHostToDevice);
 	//cudaMemset((void *)dev_re_lsf, (int)0, sizeof(double)*number_of_elements_lsf);
 
+
 	// allocate memory for boundary corrections
 	double * dev_xpr, * dev_ypf, * dev_zpu;
 	cudaMalloc((void **)&dev_xpr, sizeof(double)*number_of_elements_lsf);
@@ -334,6 +335,7 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 		// fill in dev_intermediate_lsf
 		time_step_lsf<<<block, thread>>>(dev_new_lsf, dev_intermediate_lsf, dev_cur_lsf, dev_lsf, dev_xpr, dev_ypf, dev_zpu, 
 			number_of_elements_lsf, rows, cols, pages, dx, dy, dz, true); 
+		
 		// fill in dev_new_lsf
 		time_step_lsf<<<block, thread>>>(dev_new_lsf, dev_cur_lsf, dev_intermediate_lsf, dev_lsf, dev_xpr, dev_ypf, dev_zpu, 
 			number_of_elements_lsf, rows, cols, pages, dx, dy, dz, false); 
