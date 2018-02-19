@@ -330,7 +330,7 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 
 	cudaMemcpy((void *)dev_cur_lsf, lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyHostToDevice);
 
-	for(int i = 0; i < 100; ++i){
+	for(int i = 0; i < 1; ++i){
 		// fill in dev_intermediate_lsf
 		time_step_lsf<<<block, thread>>>(dev_new_lsf, dev_intermediate_lsf, dev_cur_lsf, dev_lsf, dev_xpr, dev_ypf, dev_zpu, 
 			number_of_elements_lsf, rows, cols, pages, dx, dy, dz, true); 
