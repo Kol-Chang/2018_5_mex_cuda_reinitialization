@@ -49,8 +49,8 @@ addpath(genpath('mexReinitialization'))
 					   'sooz', int32(map.GD3.sooz-1));
 
 	%tic
-	%map.F=mexcudaReinitialization(map.F, [dx, dy, dz]);
-	map.F = mexReinitialization(map.F, shift_mat,[map.GD3.Dx,map.GD3.Dy,map.GD3.Dz]);
+	map.F=mexcudaReinitialization(map.F, [dx, dy, dz]);
+	%map.F = mexReinitialization(map.F, shift_mat,[map.GD3.Dx,map.GD3.Dy,map.GD3.Dz]);
 	%toc
 
 	map.plotSurface(0,1,'g')
@@ -180,8 +180,8 @@ tic
 		disp(['volume error before reinitialization ', num2str(ii), ': ', num2str(cur_vol_BR/map.En_Volume)]);
 	%tic;
 		%map.reinitialization( reshape(F_new, map.GD3.Size) );
-		map.F = mexReinitialization(map.F, shift_mat,[map.GD3.Dx,map.GD3.Dy,map.GD3.Dz]);
-		%map.F = mexcudaReinitialization(map.F, [dx, dy, dz]);
+		%map.F = mexReinitialization(map.F, shift_mat,[map.GD3.Dx,map.GD3.Dy,map.GD3.Dz]);
+		map.F = mexcudaReinitialization(map.F, [dx, dy, dz]);
 	%disp('reini time');
 	%toc;
 	end
