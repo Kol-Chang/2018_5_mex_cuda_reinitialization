@@ -73,7 +73,7 @@ void ExploreIdx(double * const dev_re_lsf, double const * const dev_lsf, int con
 } 
 
 __global__
-void boundary_correction(double * const dev_xpr, double * const dev_ypf, double * const dev_zpu, double * const dev_deltat,
+void boundary_correction(double * const dev_xpr, double * const dev_ypf, double * const dev_zpu,
 	double const * const dev_lsf, int const number_of_elements_lsf, int const rows, int const cols, int const pages,
 	double dx, double dy, double dz)
 {	
@@ -90,8 +90,6 @@ void boundary_correction(double * const dev_xpr, double * const dev_ypf, double 
 
 	double f0 = dev_lsf[idx]; // grab the left node
 	// fill in dev_xpr and make correction near boundary
-
-	dev_deltat[idx] = min2(min2(dx,dy),dz);
 
 	dev_xpr[idx] = dx;
 	int idx_right = sub2ind(row_idx, (col_idx < (cols-1)) ? col_idx+1 : col_idx+1-cols, pge_idx, rows, cols, pages );	
@@ -112,8 +110,6 @@ void boundary_correction(double * const dev_xpr, double * const dev_ypf, double 
 		} else{
 			dev_xpr[idx] = dist_turn(dx,f0,f2);
 		}
-		dev_deltat[idx] = min2(dev_deltat[idx],dev_xpr[idx]);
-		dev_deltat[idx_right] = min2(dev_deltat[idx_right],dx-dev_xpr[idx]);
 	}
 
 	// fill in dev_ypf
@@ -134,8 +130,6 @@ void boundary_correction(double * const dev_xpr, double * const dev_ypf, double 
 		}else{
 			dev_ypf[idx] = dist_turn(dy,f0,f2);
 		}
-		dev_deltat[idx] = min2(dev_deltat[idx],dev_ypf[idx]);
-		dev_deltat[idx_front] = min2(dev_deltat[idx_front],dy-dev_ypf[idx]);
 	}
 
 	// fill in dev_zpu
@@ -156,9 +150,8 @@ void boundary_correction(double * const dev_xpr, double * const dev_ypf, double 
 		}else{
 			dev_ypf[idx] = dist_turn(dz,f0,f2);
 		}
-		dev_deltat[idx] = min2(dev_deltat[idx],dev_zpu[idx]);
-		dev_deltat[idx_upper] = min2(dev_deltat[idx_upper],dx-dev_zpu[idx]);
 	}
+
 
 }
 
@@ -202,7 +195,7 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 	cudaMalloc((void **)&dev_zpu, sizeof(double)*number_of_elements_lsf);
 	cudaMalloc((void **)&dev_deltat, sizeof(double)*number_of_elements_lsf);
 
-	boundary_correction<<<block, thread>>>(dev_xpr, dev_ypf, dev_zpu, dev_deltat, dev_lsf, number_of_elements_lsf, rows, cols, pages, dx, dy, dz);
+	boundary_correction<<<block, thread>>>(dev_xpr, dev_ypf, dev_zpu, dev_lsf, number_of_elements_lsf, rows, cols, pages, dx, dy, dz);
 
 	ExploreIdx<<<block, thread>>>(dev_re_lsf, dev_lsf, number_of_elements_lsf, rows, cols, pages);
 
