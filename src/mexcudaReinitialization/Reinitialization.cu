@@ -9,8 +9,7 @@
 __device__ inline
 int sub2ind(int const row_idx, int const col_idx, int const pge_idx, int const rows, int const cols, int const pages)
 {
-	int idx = pge_idx * rows * cols + col_idx * rows + row_idx;
-	return idx;
+	return (pge_idx * rows * cols + col_idx * rows + row_idx);
 }
 
 __global__ 
@@ -27,7 +26,8 @@ void ExploreIdx(double * const dev_re_lsf, double const * const dev_lsf, int con
 	if(idx > number_of_elements_lsf)
 		return;
 
-	dev_re_lsf[idx] = 2 * dev_lsf[idx];
+	int right = sub2ind(row_idx, (col_idx < (cols-1)) ? col_idx+1 : col_idx+1-cols, pge_idx, rows, cols, pages );
+	dev_re_lsf[idx] = dev_lsf[right];
 } 
 
 /*
