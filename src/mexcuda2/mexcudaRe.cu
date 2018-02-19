@@ -22,7 +22,14 @@ void mexFunction(int nlhs , mxArray *plhs[], int nrhs, mxArray const *prhs[])
 
     mexPrintf("2nd try ...\n");
 
-    
+    if(nrhs != 2){
+		mexErrMsgIdAndTxt("mexReinitialization:wrong_number_of_inputs",
+			"expecting 2 inputs");
+	}
+
+	// assign level set function
+	if(mxIsGPUArray(prhs[level_set_function]))
+		mexPrintf("Get a GPU array \n");
 
 }
 
