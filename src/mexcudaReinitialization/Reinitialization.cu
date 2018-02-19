@@ -147,8 +147,23 @@ void boundary_correction(double * const dev_xpr, double * const dev_ypf, double 
 	}
 }
 
+__global__
+void explore(double * out, double * in, int number_of_elements_lsf)
+{
+	int row_idx = blockIdx.x * blockDim.x + threadIdx.x;
+	int col_idx = blockIdx.y * blockDim.y + threadIdx.y;
+	int pge_idx = blockIdx.z * blockDim.z + threadIdx.z;
+
+	int idx = sub2ind(row_idx, col_idx, pge_idx, rows, cols, pages);
+
+	if(idx > number_of_elements_lsf-1)
+		return;
+
+	out[idx] = in[idx];
+}
+
 __global__ 
-void time_step_lsf(double * const dev_new_lsf, double * const dev_intermediate_lsf, double const * const dev_cur_lsf, double const * const dev_lsf,
+void time_step_lsf(double * dev_new_lsf, double * dev_intermediate_lsf, double * dev_cur_lsf, double * dev_lsf,
 	double const * const dev_xpr, double const * const dev_ypf, double const * const dev_zpu,
 	int number_of_elements_lsf, int rows, int cols, int pages, double dx, double dy, double dz, bool const flag)
 {
@@ -331,11 +346,11 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 
 	cudaMemcpy((void *)dev_cur_lsf, lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyHostToDevice);
 
-	for(int i = 0; i < 1; ++i){
+	for(int i = 0; i < -1; ++i){
 		// fill in dev_intermediate_lsf
 		time_step_lsf<<<block, thread>>>(dev_new_lsf, dev_intermediate_lsf, dev_cur_lsf, dev_lsf, dev_xpr, dev_ypf, dev_zpu, 
 			number_of_elements_lsf, rows, cols, pages, dx, dy, dz, true); 
-		
+
 		// fill in dev_new_lsf
 		time_step_lsf<<<block, thread>>>(dev_new_lsf, dev_cur_lsf, dev_intermediate_lsf, dev_lsf, dev_xpr, dev_ypf, dev_zpu, 
 			number_of_elements_lsf, rows, cols, pages, dx, dy, dz, false); 
@@ -352,6 +367,8 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 
 	// copy results back 
 	//cudaMemcpy((void *)re_lsf, (const void *)dev_cur_lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyDeviceToHost);
+
+	explore(dev_intermediate_lsf, dev_lsf, number_of_elements_lsf);
 
 	//cudaMemcpy((void *)re_lsf, dev_cur_lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyDeviceToHost);
 	cudaMemcpy(re_lsf, dev_intermediate_lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyDeviceToHost);
