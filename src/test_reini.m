@@ -90,6 +90,8 @@ tic
  %for ii = 1:0
 	%tic;
 
+	ii
+
 	cur_eng = map.SurfaceIntegral(map.SC.^2);
 	cur_vol = map.VolumeIntegral(1);
 	cur_ara = map.SurfaceIntegral(1);
@@ -170,8 +172,8 @@ tic
 		disp(['volume error before reinitialization ', num2str(ii), ': ', num2str(cur_vol_BR/map.En_Volume)]);
 	%tic;
 		%map.reinitialization( reshape(F_new, map.GD3.Size) );
-		map.F = mexReinitialization(map.F, shift_mat,[map.GD3.Dx,map.GD3.Dy,map.GD3.Dz]);
-		%map.F = mexcudaReinitialization(map.F, [map.GD3.Dx,map.GD3.Dy,map.GD3.Dz]);
+		%map.F = mexReinitialization(map.F, shift_mat,[map.GD3.Dx,map.GD3.Dy,map.GD3.Dz]);
+		map.F = mexcudaReinitialization(map.F, [map.GD3.Dx,map.GD3.Dy,map.GD3.Dz]);
 	%disp('reini time');
 	%toc;
 	end
