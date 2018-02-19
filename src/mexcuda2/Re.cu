@@ -28,7 +28,7 @@ _global_ explore(double * const dev_re_lsf, double const * const dev_lsf,
 	if(idx > number_of_elements_lsf-1)
 		return;
 
-	out[idx] = 2*  in[idx];
+	dev_re_lsf[idx] = 2*  dev_lsf[idx];
 }
 
 void Reinitialization(double * const dev_re_lsf, double const * const dev_lsf, 
