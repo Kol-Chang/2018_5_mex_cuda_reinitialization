@@ -46,6 +46,6 @@ void Reinitialization(double * const dev_re_lsf, double const * const dev_lsf,
 						(pages + thread.z - 1) / thread.z);
 
 	
-	explore(dev_re_lsf, dev_lsf, number_of_elements_lsf, rows, cols, pages);
+	explore<<<block, thread>>>(dev_re_lsf, dev_lsf, number_of_elements_lsf, rows, cols, pages);
 
 }
