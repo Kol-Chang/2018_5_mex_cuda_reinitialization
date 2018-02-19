@@ -368,10 +368,10 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 	// copy results back 
 	//cudaMemcpy((void *)re_lsf, (const void *)dev_cur_lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyDeviceToHost);
 
-	explore(dev_intermediate_lsf, dev_lsf, number_of_elements_lsf);
+	explore<<<block, thread>>>(dev_intermediate_lsf, dev_lsf, number_of_elements_lsf);
 
 	//cudaMemcpy((void *)re_lsf, dev_cur_lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyDeviceToHost);
-	cudaMemcpy<<<block, thread>>>(re_lsf, dev_intermediate_lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyDeviceToHost);
+	cudaMemcpy(re_lsf, dev_intermediate_lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyDeviceToHost);
 	
 	for(int i = 0;i < 10; i++){
 		mexPrintf("dev_cur_lsf[%d] : %f \n", i, re_lsf[i] );
