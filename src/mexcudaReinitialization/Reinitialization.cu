@@ -318,7 +318,7 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 
 	boundary_correction<<<block, thread>>>(dev_xpr, dev_ypf, dev_zpu, dev_lsf, number_of_elements_lsf, rows, cols, pages, dx, dy, dz);
 
-	doulbe * dev_new_lsf, * dev_intermediate_lsf, * dev_cur_lsf;
+	double * dev_new_lsf, * dev_intermediate_lsf, * dev_cur_lsf;
 	cudaMalloc((void **)&dev_new_lsf, sizeof(double)*number_of_elements_lsf);
 	cudaMalloc((void **)&dev_intermediate_lsf, sizeof(double)*number_of_elements_lsf);
 	cudaMalloc((void **)&dev_cur_lsf, sizeof(double)*number_of_elements_lsf);
