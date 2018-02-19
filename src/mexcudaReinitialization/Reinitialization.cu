@@ -148,7 +148,7 @@ void boundary_correction(double * const dev_xpr, double * const dev_ypf, double 
 }
 
 __global__
-void explore(double * out, double * in, int number_of_elements_lsf)
+void explore(double * out, double * in, int number_of_elements_lsf, int rows, int cols, int pages)
 {
 	int row_idx = blockIdx.x * blockDim.x + threadIdx.x;
 	int col_idx = blockIdx.y * blockDim.y + threadIdx.y;
@@ -368,7 +368,7 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 	// copy results back 
 	//cudaMemcpy((void *)re_lsf, (const void *)dev_cur_lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyDeviceToHost);
 
-	explore<<<block, thread>>>(dev_intermediate_lsf, dev_lsf, number_of_elements_lsf);
+	explore<<<block, thread>>>(dev_intermediate_lsf, dev_lsf, number_of_elements_lsf, rows, cols, pages);
 
 	//cudaMemcpy((void *)re_lsf, dev_cur_lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyDeviceToHost);
 	cudaMemcpy(re_lsf, dev_intermediate_lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyDeviceToHost);
