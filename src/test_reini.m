@@ -138,6 +138,7 @@ tic
 		 map.GD3.SparseDiag(map.Nz) * map.GD3.Lz ;
 	% surface laplacian operator
 	SL = LOP - map.GD3.SparseDiag(map.SC) * ND;
+	keyboard
 	% normal velocity operator without drag coefficient and Pressure
 	NV = Kappa * ( ( SL + map.GD3.SparseDiag(co) ) * CvL ) - Tension * CvL;
 	%NV = Kappa * ( ( SL + map.GD3.SparseDiag(co) ) * CvL );
