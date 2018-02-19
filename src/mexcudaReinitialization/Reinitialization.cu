@@ -73,7 +73,8 @@ void ExploreIdx(double * const dev_re_lsf, double const * const dev_lsf, int con
 } 
 
 __global__
-void boundary_correction(double * const dev_xpr, double const * const dev_lsf, 
+void boundary_correction(double * const dev_xpr, double * const dev_ypf, double * const dev_zpu,
+	double const * const dev_lsf, 
 	int const number_of_elements_lsf, int const rows, int const cols, int const pages,
 	double dx, double dy, double dz)
 {	
@@ -88,10 +89,11 @@ void boundary_correction(double * const dev_xpr, double const * const dev_lsf,
 	if(idx > number_of_elements_lsf)
 		return;
 
-	dev_xpr[idx] = dx;
-
-	int idx_right = sub2ind(row_idx, (col_idx < (cols-1)) ? col_idx+1 : col_idx+1-cols, pge_idx, rows, cols, pages );
 	double f0 = dev_lsf[idx]; // grab the left node
+	// fill in dev_xpr and make correction near boundary
+
+	dev_xpr[idx] = dx;
+	int idx_right = sub2ind(row_idx, (col_idx < (cols-1)) ? col_idx+1 : col_idx+1-cols, pge_idx, rows, cols, pages );	
 	double f2 = dev_lsf[right]; // grad the right node
 
 	if(f0*f2 < 0) // if there is a boundary to the right
@@ -107,9 +109,14 @@ void boundary_correction(double * const dev_xpr, double const * const dev_lsf,
 		} else{
 			dev_xpr[idx] = dist_turn(dx,f0,f2);
 		}
-
-
 	}
+
+	// fill in dev_ypf
+	dev_ypf[idx] = dy;
+	int idx_front = sub2ind( (row_idx < (rows-1)) ? row_idx+1 : row_idx+1-rows, col_idx, pge_idx, rows, cols, pages);
+
+	// fill in dev_zpu
+	dev_zpu[idx] = dz;
 }
 
 /*
@@ -146,10 +153,12 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 	//cudaMemset((void *)dev_re_lsf, (int)0, sizeof(double)*number_of_elements_lsf);
 
 	// allocate memory for boundary corrections
-	double * dev_xpr;
+	double * dev_xpr, * dev_ypf, * dev_zpu;
 	cudaMalloc((void **)&dev_xpr, sizeof(double)*number_of_elements_lsf);
+	cudaMalloc((void **)&dev_ypf, sizeof(double)*number_of_elements_lsf);
+	cudaMalloc((void **)&dev_zpu, sizeof(double)*number_of_elements_lsf);
 
-	boundary_correction(dev_xpr, dev_lsf, number_of_elements_lsf, rows, cols, pages, dx, dy, dz);
+	boundary_correction<<<block, thread>>>(dev_xpr, dev_ypf, dev_zpu, dev_lsf, number_of_elements_lsf, rows, cols, pages, dx, dy, dz);
 
 	ExploreIdx<<<block, thread>>>(dev_re_lsf, dev_lsf, number_of_elements_lsf, rows, cols, pages);
 
@@ -159,6 +168,8 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 	cudaFree(dev_lsf);
 	cudaFree(dev_re_lsf);
 	cudaFree(dev_xpr);
+	cudaFree(dev_ypf);
+	cudaFree(dev_zpu);
 
 }
 
