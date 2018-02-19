@@ -6,10 +6,52 @@
  * convert subindices to global indices 
  * for a 3d array stored in colum major
  */
-__device__ inline
+__device__ inline 
 int sub2ind(int const row_idx, int const col_idx, int const pge_idx, int const rows, int const cols, int const pages)
 {
 	return (pge_idx * rows * cols + col_idx * rows + row_idx);
+}
+
+__device__ inline 
+double min_mod(double x, double y)
+{
+	return ( (x*y<0) ? 0 : (fabs(x)<fabs(y) ? x : y ));
+}
+
+__device__ inline
+double min2(double x, double y)
+{
+	return ( (x<y) ? x : y );
+}
+
+__device__ inline
+double max2(double x, double y)
+{
+	return ( (x<y) ? y : x );
+}
+
+__device__ inline
+double sign(double x)
+{
+	return ( x>0 ? 1 : -1 );
+}
+
+__device__ inline
+doulbe discriminant(double p2, double v0, double v2)
+{
+	return ( pow(0.5*p2-v0-v2,2) - 4.*v0*v2 );
+}
+
+__device__ inline
+double dist(double disc, double ds, double p2, double v0, double v2)
+{
+	return ( ds * (0.5 + (v0 - v2 - sign(v0-v2)*sqrt(disc)) / p2 ) );
+}
+
+__device__ inline
+double dist_turn(double ds, double v0, double v2)
+{
+	return ( ds * v0 / (v0 - v2) );
 }
 
 __global__ 
@@ -29,6 +71,46 @@ void ExploreIdx(double * const dev_re_lsf, double const * const dev_lsf, int con
 	int right = sub2ind(row_idx, (col_idx < (cols-1)) ? col_idx+1 : col_idx+1-cols, pge_idx, rows, cols, pages );
 	dev_re_lsf[idx] = dev_lsf[right];
 } 
+
+__global__
+void boundary_correction(double * const dev_xpr, double const * const dev_lsf, 
+	int const number_of_elements_lsf, int const rows, int const cols, int const pages,
+	double dx, double dy, double dz)
+{	
+	double epislon = 10e-10;
+
+	int row_idx = blockIdx.x * blockDim.x + threadIdx.x;
+	int col_idx = blockIdx.y * blockDim.y + threadIdx.y;
+	int pge_idx = blockIdx.z * blockDim.z + threadIdx.z;
+
+	int idx = sub2ind(row_idx, col_idx, pge_idx, rows, cols, pages);
+
+	if(idx > number_of_elements_lsf)
+		return;
+
+	dev_xpr[idx] = dx;
+
+	int idx_right = sub2ind(row_idx, (col_idx < (cols-1)) ? col_idx+1 : col_idx+1-cols, pge_idx, rows, cols, pages );
+	double f0 = dev_lsf[idx]; // grab the left node
+	double f2 = dev_lsf[right]; // grad the right node
+
+	if(f0*f2 < 0) // if there is a boundary to the right
+	{
+		int idx_left = sub2ind(row_idx, (col_idx > 0) ? col_idx-1 : col_idx-1+cols, pge_idx, rows, cols, pages);
+		int idx_2right = sub2ind(row_idx, (col_idx < (cols-2) ? col_idx+2 : col_idx+2-cols), pge_idx, rows, cols, pages);
+
+		double p2xl = dev_lsf[idx_left] - 2.0 * f0 + f2; // 2nd difference on the left node
+		double p2xr = f0 - 2.0 * f2 + dev_lsf[idx_2right]; // 2nd difference on the right node
+		double p2 = min_mod(p2xl, p2xr);
+		if(p2>epislon){
+			dev_xpr[idx] = dist(discriminant(p2,f0,f2),dx,p2,f0,f2);
+		} else{
+			dev_xpr[idx] = dist_turn(dx,f0,f2);
+		}
+
+
+	}
+}
 
 /*
  * reinitialization scheme
@@ -63,6 +145,12 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 	cudaMemcpy((void *)dev_lsf, lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyHostToDevice);
 	//cudaMemset((void *)dev_re_lsf, (int)0, sizeof(double)*number_of_elements_lsf);
 
+	// allocate memory for boundary corrections
+	double * dev_xpr;
+	cudaMalloc((void **)&dev_xpr, sizeof(double)*number_of_elements_lsf);
+
+	boundary_correction(dev_xpr, dev_lsf, number_of_elements_lsf, rows, cols, pages, dx, dy, dz);
+
 	ExploreIdx<<<block, thread>>>(dev_re_lsf, dev_lsf, number_of_elements_lsf, rows, cols, pages);
 
 	// copy results back 
@@ -70,6 +158,7 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 
 	cudaFree(dev_lsf);
 	cudaFree(dev_re_lsf);
+	cudaFree(dev_xpr);
 
 }
 
