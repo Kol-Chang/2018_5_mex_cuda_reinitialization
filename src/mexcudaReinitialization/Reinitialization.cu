@@ -37,7 +37,7 @@ double sign(double x)
 }
 
 __device__ inline
-doulbe discriminant(double p2, double v0, double v2)
+double discriminant(double p2, double v0, double v2)
 {
 	return ( pow(0.5*p2-v0-v2,2) - 4.*v0*v2 );
 }
@@ -94,7 +94,7 @@ void boundary_correction(double * const dev_xpr, double * const dev_ypf, double 
 
 	dev_xpr[idx] = dx;
 	int idx_right = sub2ind(row_idx, (col_idx < (cols-1)) ? col_idx+1 : col_idx+1-cols, pge_idx, rows, cols, pages );	
-	double f2 = dev_lsf[right]; // grad the right node
+	double f2 = dev_lsf[idx_right]; // grad the right node
 
 	if(f0*f2 < 0) // if there is a boundary to the right
 	{
