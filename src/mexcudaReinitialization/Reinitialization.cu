@@ -94,15 +94,18 @@ void boundary_correction(double * const dev_xpr, double * const dev_ypf, double 
 	// fill in dev_xpr and make correction near boundary
 
 	dev_xpr[idx] = dx;
-	int idx_right = sub2ind(row_idx, (col_idx < (cols-1)) ? col_idx+1 : col_idx+1-cols, pge_idx, rows, cols, pages );	
+	//int idx_right = sub2ind(row_idx, (col_idx < (cols-1)) ? col_idx+1 : col_idx+1-cols, pge_idx, rows, cols, pages );	
+	int idx_right = sub2ind(row_idx, (col_idx < (cols-1)) ? col_idx+1 : cols, pge_idx, rows, cols, pages );	
 	double f2 = dev_lsf[idx_right]; // grab the right node
 
 	double p2;
 
 	if(f0*f2 < 0) // if there is a boundary to the right
 	{
-		int idx_left = sub2ind(row_idx, (col_idx > 0) ? col_idx-1 : col_idx-1+cols, pge_idx, rows, cols, pages);
-		int idx_2right = sub2ind(row_idx, (col_idx < (cols-2) ? col_idx+2 : col_idx+2-cols), pge_idx, rows, cols, pages);
+		//int idx_left = sub2ind(row_idx, (col_idx > 0) ? col_idx-1 : col_idx-1+cols, pge_idx, rows, cols, pages);
+		int idx_left = sub2ind(row_idx, (col_idx > 0) ? col_idx-1 : 0, pge_idx, rows, cols, pages);
+		//int idx_2right = sub2ind(row_idx, (col_idx < (cols-2) ? col_idx+2 : col_idx+2-cols), pge_idx, rows, cols, pages);
+		int idx_2right = sub2ind(row_idx, (col_idx < (cols-2) ? col_idx+2 : cols), pge_idx, rows, cols, pages);
 
 		double p2xl = dev_lsf[idx_left] - 2.0 * f0 + f2; // 2nd difference on the left node
 		double p2xr = f0 - 2.0 * f2 + dev_lsf[idx_2right]; // 2nd difference on the right node
@@ -116,13 +119,16 @@ void boundary_correction(double * const dev_xpr, double * const dev_ypf, double 
 
 	// fill in dev_ypf
 	dev_ypf[idx] = dy;
-	int idx_front = sub2ind( (row_idx < (rows-1)) ? row_idx+1 : row_idx+1-rows, col_idx, pge_idx, rows, cols, pages);
+	//int idx_front = sub2ind( (row_idx < (rows-1)) ? row_idx+1 : row_idx+1-rows, col_idx, pge_idx, rows, cols, pages);
+	int idx_front = sub2ind( (row_idx < (rows-1)) ? row_idx+1 : rows, col_idx, pge_idx, rows, cols, pages);
 	f2 = dev_lsf[idx_front]; // grab the front node value
 
 	if(f0*f2 < 0) // if there is a boundary to the front
 	{
-		int idx_back = sub2ind( (row_idx > 0) ? row_idx-1 : row_idx-1+rows, col_idx, pge_idx, rows, cols, pages );
-		int idx_2front = sub2ind( (row_idx < (rows-2)) ? row_idx+2 : row_idx+2-rows, col_idx, pge_idx, rows, cols, pages );
+		//int idx_back = sub2ind( (row_idx > 0) ? row_idx-1 : row_idx-1+rows, col_idx, pge_idx, rows, cols, pages );
+		int idx_back = sub2ind( (row_idx > 0) ? row_idx-1 : 0, col_idx, pge_idx, rows, cols, pages );
+		//int idx_2front = sub2ind( (row_idx < (rows-2)) ? row_idx+2 : row_idx+2-rows, col_idx, pge_idx, rows, cols, pages );
+		int idx_2front = sub2ind( (row_idx < (rows-2)) ? row_idx+2 : rows, col_idx, pge_idx, rows, cols, pages );
 
 		double p2yb = dev_lsf[idx_back] - 2.0 * f0 + f2;
 		double p2yf = f0 - 2.0 * f2 + dev_lsf[idx_2front];
@@ -136,13 +142,16 @@ void boundary_correction(double * const dev_xpr, double * const dev_ypf, double 
 
 	// fill in dev_zpu
 	dev_zpu[idx] = dz;
-	int idx_upper = sub2ind( row_idx, col_idx, (pge_idx < (pages-1)) ? pge_idx+1 : pge_idx+1-pages, rows, cols, pages );
+	//int idx_upper = sub2ind( row_idx, col_idx, (pge_idx < (pages-1)) ? pge_idx+1 : pge_idx+1-pages, rows, cols, pages );
+	int idx_upper = sub2ind( row_idx, col_idx, (pge_idx < (pages-1)) ? pge_idx+1 : pages, rows, cols, pages );
 	f2 = dev_lsf[idx_upper]; // grab the upper node value
 
 	if(f0*f2 < 0) // if there is a boundary to the upper side
 	{
-		int idx_lower = sub2ind(row_idx, col_idx, (pge_idx > 0) ? pge_idx-1: pge_idx-1+pages, rows, cols, pages);
-		int idx_2upper = sub2ind( row_idx, col_idx, (pge_idx < (pages-2)) ? pge_idx+2 : pge_idx+2-pages, rows, cols, pages );
+		//int idx_lower = sub2ind(row_idx, col_idx, (pge_idx > 0) ? pge_idx-1: pge_idx-1+pages, rows, cols, pages);
+		int idx_lower = sub2ind(row_idx, col_idx, (pge_idx > 0) ? pge_idx-1: pages, rows, cols, pages);
+		//int idx_2upper = sub2ind( row_idx, col_idx, (pge_idx < (pages-2)) ? pge_idx+2 : pge_idx+2-pages, rows, cols, pages );
+		int idx_2upper = sub2ind( row_idx, col_idx, (pge_idx < (pages-2)) ? pge_idx+2 : pages, rows, cols, pages );
 
 		double p2zd = dev_lsf[idx_lower] - 2.0 * f0 + f2;
 		double p2zu = f0 - 2.0 * f2 + dev_lsf[idx_2upper];
@@ -173,10 +182,14 @@ void time_step_lsf(double * const dev_new_lsf, double * const dev_intermediate_l
 	double p2m, p2, p2r, p2l;
 
 	// compute xR & xL
-	int idx_right = sub2ind(row_idx, (col_idx < (cols-1)) ? col_idx+1 : col_idx+1-cols, pge_idx, rows, cols, pages );
-	int idx_2right = sub2ind(row_idx, (col_idx < (cols-2)) ? col_idx+2 : col_idx+2-cols, pge_idx, rows, cols, pages );
-	int idx_left = sub2ind(row_idx, (col_idx > 0) ? col_idx-1 : col_idx-1+cols, pge_idx, rows, cols, pages);
-	int idx_2left = sub2ind(row_idx, (col_idx > 1) ? col_idx-2 : col_idx-2+cols, pge_idx, rows, cols, pages);
+	//int idx_right = sub2ind(row_idx, (col_idx < (cols-1)) ? col_idx+1 : col_idx+1-cols, pge_idx, rows, cols, pages );
+	//int idx_2right = sub2ind(row_idx, (col_idx < (cols-2)) ? col_idx+2 : col_idx+2-cols, pge_idx, rows, cols, pages );
+	//int idx_left = sub2ind(row_idx, (col_idx > 0) ? col_idx-1 : col_idx-1+cols, pge_idx, rows, cols, pages);
+	//int idx_2left = sub2ind(row_idx, (col_idx > 1) ? col_idx-2 : col_idx-2+cols, pge_idx, rows, cols, pages);
+	int idx_right = sub2ind(row_idx, (col_idx < (cols-1)) ? col_idx+1 : cols, pge_idx, rows, cols, pages );
+	int idx_2right = sub2ind(row_idx, (col_idx < (cols-2)) ? col_idx+2 : cols, pge_idx, rows, cols, pages );
+	int idx_left = sub2ind(row_idx, (col_idx > 0) ? col_idx-1 : 0, pge_idx, rows, cols, pages);
+	int idx_2left = sub2ind(row_idx, (col_idx > 1) ? col_idx-2 : 0, pge_idx, rows, cols, pages);
 	double fr = dev_cur_lsf[idx_right];
 	double f2r = dev_cur_lsf[idx_2right];
 	double fl = dev_cur_lsf[idx_left];
@@ -198,10 +211,15 @@ void time_step_lsf(double * const dev_new_lsf, double * const dev_intermediate_l
 	double xL = (f0-fl) / xpl + xpl * p2m;
 
 	// compute yF & yB
-	int idx_front = sub2ind( (row_idx < (rows-1)) ? row_idx+1 : row_idx+1-rows, col_idx, pge_idx, rows, cols, pages);
-	int idx_2front = sub2ind( (row_idx < (rows-2)) ? row_idx+2 : row_idx+2-rows, col_idx, pge_idx, rows, cols, pages);
-	int idx_back = sub2ind( (row_idx > 0) ? row_idx-1 : row_idx-1+rows, col_idx, pge_idx, rows, cols, pages );
-	int idx_2back = sub2ind( (row_idx > 1) ? row_idx-2 : row_idx-2+rows, col_idx, pge_idx, rows, cols, pages );
+	//int idx_front = sub2ind( (row_idx < (rows-1)) ? row_idx+1 : row_idx+1-rows, col_idx, pge_idx, rows, cols, pages);
+	//int idx_2front = sub2ind( (row_idx < (rows-2)) ? row_idx+2 : row_idx+2-rows, col_idx, pge_idx, rows, cols, pages);
+	//int idx_back = sub2ind( (row_idx > 0) ? row_idx-1 : row_idx-1+rows, col_idx, pge_idx, rows, cols, pages );
+	//int idx_2back = sub2ind( (row_idx > 1) ? row_idx-2 : row_idx-2+rows, col_idx, pge_idx, rows, cols, pages );
+
+	int idx_front = sub2ind( (row_idx < (rows-1)) ? row_idx+1 : rows, col_idx, pge_idx, rows, cols, pages);
+	int idx_2front = sub2ind( (row_idx < (rows-2)) ? row_idx+2 : rows, col_idx, pge_idx, rows, cols, pages);
+	int idx_back = sub2ind( (row_idx > 0) ? row_idx-1 : 0, col_idx, pge_idx, rows, cols, pages );
+	int idx_2back = sub2ind( (row_idx > 1) ? row_idx-2 : 0, col_idx, pge_idx, rows, cols, pages );
 
 	fr = dev_cur_lsf[idx_front];
 	f2r = dev_cur_lsf[idx_2front];
@@ -224,10 +242,15 @@ void time_step_lsf(double * const dev_new_lsf, double * const dev_intermediate_l
 	double yB = (f0-fl) / ypb + ypb * p2m;
 
 	// compute zU & zD
-	int idx_upper = sub2ind( row_idx, col_idx, (pge_idx < (pages-1)) ? pge_idx+1 : pge_idx+1-pages, rows, cols, pages );
-	int idx_2upper = sub2ind( row_idx, col_idx, (pge_idx < (pages-2)) ? pge_idx+2 : pge_idx+2-pages, rows, cols, pages );
-	int idx_lower = sub2ind(row_idx, col_idx, (pge_idx > 0) ? pge_idx-1: pge_idx-1+pages, rows, cols, pages);
-	int idx_2lower = sub2ind(row_idx, col_idx, (pge_idx > 1) ? pge_idx-2: pge_idx-2+pages, rows, cols, pages);
+	//int idx_upper = sub2ind( row_idx, col_idx, (pge_idx < (pages-1)) ? pge_idx+1 : pge_idx+1-pages, rows, cols, pages );
+	//int idx_2upper = sub2ind( row_idx, col_idx, (pge_idx < (pages-2)) ? pge_idx+2 : pge_idx+2-pages, rows, cols, pages );
+	//int idx_lower = sub2ind(row_idx, col_idx, (pge_idx > 0) ? pge_idx-1: pge_idx-1+pages, rows, cols, pages);
+	//int idx_2lower = sub2ind(row_idx, col_idx, (pge_idx > 1) ? pge_idx-2: pge_idx-2+pages, rows, cols, pages);
+
+	int idx_upper = sub2ind( row_idx, col_idx, (pge_idx < (pages-1)) ? pge_idx+1 : pages, rows, cols, pages );
+	int idx_2upper = sub2ind( row_idx, col_idx, (pge_idx < (pages-2)) ? pge_idx+2 : pages, rows, cols, pages );
+	int idx_lower = sub2ind(row_idx, col_idx, (pge_idx > 0) ? pge_idx-1: 0, rows, cols, pages);
+	int idx_2lower = sub2ind(row_idx, col_idx, (pge_idx > 1) ? pge_idx-2: 0, rows, cols, pages);
 
 	fr = dev_cur_lsf[idx_upper];
 	f2r = dev_cur_lsf[idx_2upper];
