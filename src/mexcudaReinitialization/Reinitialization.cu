@@ -333,7 +333,8 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 		time_step_lsf<<<block, thread>>>(dev_new_lsf, dev_cur_lsf, dev_intermediate_lsf, dev_lsf, dev_xpr, dev_ypf, dev_zpu, 
 			number_of_elements_lsf, rows, cols, pages, dx, dy, dz, false); 
 
-		std::swap(dev_new_lsf,dev_cur_lsf);
+		//std::swap(dev_new_lsf,dev_cur_lsf);
+		dev_cur_lsf = dev_new_lsf;
 	}
 
 
