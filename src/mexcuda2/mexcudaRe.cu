@@ -44,7 +44,7 @@ void mexFunction(int nlhs , mxArray *plhs[], int nrhs, mxArray const * prhs[])
 	dimension_array = mxGPUGetDimensions(lsf);
 	number_of_elements_lsf = mxGPUGetNumberOfElements(lsf);
 
-	if (category != mxDOUBLE_CLASS || number_of_dimensions != (mwSize)3 || !mxIsGPUArray(lsf)){
+	if (category != mxDOUBLE_CLASS || number_of_dimensions != (mwSize)3 || !mxIsGPUArray(prhs[level_set_function])){
 		mexErrMsgIdAndTxt("mexReinitialization:Invalid_Input",
 			"Argument %d must be a 3 dimension GPUarray of double precision!",
 			level_set_function);
