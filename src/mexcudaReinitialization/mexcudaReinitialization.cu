@@ -16,7 +16,7 @@ enum out_put{
 // the gateway function
 void mexFunction(int nlhs, mxArray * plhs[], int nrhs, mxArray const * prhs[])
 {
-	mxInitGPU();
+	//mxInitGPU();
 
 	mexPrintf("inside mexFunction \n");
 
