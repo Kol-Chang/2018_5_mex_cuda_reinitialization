@@ -84,6 +84,7 @@ addpath(genpath('mexcudaReinitialization'))
 ves = figure('Name', 'Vesicle Shape');
 eng = figure('Name', 'energy/volume/area vs time');
 
+gpu = gpuDevice();
 %
 tic
  for ii = 1:loops-1
@@ -177,6 +178,10 @@ tic
 		%map.reinitialization( reshape(F_new, map.GD3.Size) );
 		%map.F = mexReinitialization(map.F, shift_mat,[map.GD3.Dx,map.GD3.Dy,map.GD3.Dz]);
 		map.F = mexcudaReinitialization(map.F, [map.GD3.Dx,map.GD3.Dy,map.GD3.Dz]);
+
+		% reset gpu
+		clear mexcudaReinitialization;
+		reset(gpu);
 	%disp('reini time');
 	%toc;
 	end
