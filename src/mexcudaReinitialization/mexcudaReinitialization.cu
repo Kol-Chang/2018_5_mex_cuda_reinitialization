@@ -1,5 +1,5 @@
 #include "mex.h"
-#include "gpu/mxGPUArray.h"
+//#include "gpu/mxGPUArray.h"
 #include "mexcudaReinitialization.hpp"
 
 // enumerate input index
