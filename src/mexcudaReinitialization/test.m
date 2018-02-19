@@ -22,4 +22,7 @@
 
 %
 
-new_F = mexcudaReinitialization(F,[dx, dy, dz]);
+for i=1:1
+	new_F = mexcudaReinitialization(F,[dx, dy, dz]);
+end
+

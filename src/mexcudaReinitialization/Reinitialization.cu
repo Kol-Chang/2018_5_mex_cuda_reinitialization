@@ -286,10 +286,10 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 	int const rows, int const cols, int const pages, 
 	double const dx, double const dy, double const dz)
 {
-	mexPrintf("hello cuda!\n");
-	mexPrintf("number of elements : %d\n", number_of_elements_lsf);
-	mexPrintf("dimension array:(%d,%d,%d)\n",rows,cols,pages);
-	mexPrintf("grid spacing:(%f,%f,%f)\n",dx,dy,dz);
+	mexPrintf("reitializing ...\n");
+	//mexPrintf("number of elements : %d\n", number_of_elements_lsf);
+	//mexPrintf("dimension array:(%d,%d,%d)\n",rows,cols,pages);
+	//mexPrintf("grid spacing:(%f,%f,%f)\n",dx,dy,dz);
 
 	// 
 	int dimx = rows, dimy = 4, dimz = 1;
