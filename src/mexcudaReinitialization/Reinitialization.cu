@@ -74,7 +74,7 @@ void boundary_correction(double * const dev_xpr, double * const dev_ypf, double 
 	if(idx > number_of_elements_lsf-1)
 		return;
 
-	double f0 = dev_lsf[idx]; // grab the left node
+	double f0 = dev_lsf[idx]; // grab the current/left/back/lower node
 	// fill in dev_xpr and make correction near boundary
 
 	dev_xpr[idx] = dx;
