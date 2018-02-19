@@ -144,7 +144,7 @@ void boundary_correction(double * const dev_xpr, double * const dev_ypf, double 
 		int idx_2upper = sub2ind( row_idx, col_idx, (pge_idx < (pages-2)) ? pge_idx+2 : pge_idx+2-pages, rows, cols, pages );
 
 		double p2zd = dev_lsf[idx_lower] - 2.0 * f0 + f2;
-		double p2zu = f0 - 2.0 * f2 + dev_lsf(idx_2upper);
+		double p2zu = f0 - 2.0 * f2 + dev_lsf[idx_2upper];
 		p2 = min_mod(p2zd, p2zu);
 		if(p2>epislon){
 			dev_zpu[idx] = dist(discriminant(p2,f0,f2),dz,p2,f0,f2);
