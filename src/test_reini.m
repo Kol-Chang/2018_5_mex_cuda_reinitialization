@@ -1,6 +1,6 @@
 % test the mexReinitialization scheme
 
-addpath(genpath('mexReinitialization'))
+addpath(genpath('mexcudaReinitialization'))
 %path_test % test if  I can call function from another folder
 
 
@@ -20,6 +20,10 @@ addpath(genpath('mexReinitialization'))
 	[x, y, z] = meshgrid(xv, yv, zv); % simulation domain in nm
 
 	F = sqrt(x.^2/a^2 + y.^2/b^2 + z.^2/c^2) - 1;
+
+	dx = xv(2)-xv(1);
+	dy = yv(2)-yv(1);
+	dz = zv(2)-zv(1);
 
 	map = SD.SDF3(x,y,z,F);
 %	tic;map.reinitialization( map.F );toc
@@ -44,7 +48,7 @@ addpath(genpath('mexReinitialization'))
 					   'sooz', int32(map.GD3.sooz-1));
 
 	%tic
-	%out=mexReinitialization(map.F, shift_mat,[map.GD3.Dx,map.GD3.Dy,map.GD3.Dz]);
+	%out=mexReinitialization(map.F, [dx, dy, dz]);
 	%toc
 
 
@@ -66,7 +70,7 @@ addpath(genpath('mexReinitialization'))
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  map.plotSurface(0,1,'g')
 
- loops = 0;
+ loops = 1000;
  Skip = 20;
  SkipR = 1;
  Dt = 2 * map.GD3.Dx ^ 4 / Kappa; % it is more like Dt*zeta(the drag coefficient)
@@ -168,7 +172,8 @@ tic
 		disp(['volume error before reinitialization ', num2str(ii), ': ', num2str(cur_vol_BR/map.En_Volume)]);
 	%tic;
 		%map.reinitialization( reshape(F_new, map.GD3.Size) );
-		map.F = mexReinitialization(map.F, shift_mat,[map.GD3.Dx,map.GD3.Dy,map.GD3.Dz]);
+		%map.F = mexReinitialization(map.F, shift_mat,[map.GD3.Dx,map.GD3.Dy,map.GD3.Dz]);
+		map.F = mexcudaReinitialization(map.F, [dx, dy, dz]);
 	%disp('reini time');
 	%toc;
 	end
