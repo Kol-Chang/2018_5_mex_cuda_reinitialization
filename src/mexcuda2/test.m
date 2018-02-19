@@ -15,4 +15,5 @@ fun = @(x,y,z) (0.1+(x-3.5).^2+(sqrt(y.^2+z.^2)-2).^2) .* (sqrt(x.^2/4+(z.^2+y.^
 F = fun(x,y,z);
 
 F_g = gpuArray(F);
-ds = gpuArray([dx,dy,dz]);
+%ds = gpuArray([dx,dy,dz]);
+ds = [dx,dy,dz];

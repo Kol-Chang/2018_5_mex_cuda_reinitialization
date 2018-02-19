@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <cuda_runtime_api.h>
 #include "mex.h"
 #include "gpu/mxGPUArray.h"
 
@@ -24,15 +26,12 @@ void mexFunction(int nlhs , mxArray *plhs[], int nrhs, mxArray const * prhs[])
 
     mxClassID category;
 
-    mexPrintf("2nd try ...\n");
-
     if(nrhs != 2){
 		mexErrMsgIdAndTxt("mexReinitialization:wrong_number_of_inputs",
 			"expecting 2 inputs");
 	}
 
 	// assign level set function
-	
 	mxGPUArray const * lsf = mxGPUCreateFromMxArray(prhs[level_set_function]);
 	double const *dev_lsf = (double const *)(mxGPUGetDataReadOnly(lsf)); // pointer to input data on device
 
@@ -47,15 +46,25 @@ void mexFunction(int nlhs , mxArray *plhs[], int nrhs, mxArray const * prhs[])
 
 	if (category != mxDOUBLE_CLASS || number_of_dimensions != (mwSize)3 || !mxIsGPUArray(lsf)){
 		mexErrMsgIdAndTxt("mexReinitialization:Invalid_Input",
-			"Argument %d must be a 3 dimension array of double precision!",
+			"Argument %d must be a 3 dimension GPUarray of double precision!",
 			level_set_function);
 	}
 
+	// assign grid spacing array
+	double *ds;
+	size_t rows, cols;
 
+	category = mxGetClassID(prhs[grid_spacing]);
+	rows = mxGetM(prhs[grid_spacing]);
+	cols = mxGetN(prhs[grid_spacing]);
+	if (category != mxDOUBLE_CLASS || rows != (size_t)1 || cols != (size_t)3){
+		mexErrMsgIdAndTxt("mexReinitialization:Invalid_Input",
+			"Argument %d must be a 1X3 double array of the grid spacing",
+			grid_spacing);
+	}
+	ds = (double *)mxGetData(prhs[grid_spacing]);
+	// finish assigning spacing array
 
-	//
-	mxGPUArray const * ds = mxGPUCreateFromMxArray(prhs[grid_spacing]);
-	double const *dev_ds = (double const *)(mxGPUGetDataReadOnly(ds)); 
 
 	/* Create a GPUArray to hold the result and get its underlying pointer. */
  	mxGPUArray *re_lsf = mxGPUCreateGPUArray(mxGPUGetNumberOfDimensions(lsf),
@@ -112,7 +121,12 @@ void mexFunction(int nlhs , mxArray *plhs[], int nrhs, mxArray const * prhs[])
                             				 MX_GPU_DO_NOT_INITIALIZE);
  	double * dev_cur_lsf = (double *)(mxGPUGetData(cur_lsf)); // pointer to data on device
 
-
+ 	// call the computation routine
+ 	Reinitialization(dev_re_lsf, lsf, 
+ 		dev_xpr, dev_ypf, dev_zpu,
+ 		dev_new_lsf, dev_intermediate_lsf, dev_cur_lsf,
+ 		number_of_elements_lsf, dimension_array[0], dimension_array[1], dimension_array[2],
+ 		ds[0], ds[1], ds[2]);
 
 
 
@@ -124,7 +138,6 @@ void mexFunction(int nlhs , mxArray *plhs[], int nrhs, mxArray const * prhs[])
      * data. These must be destroyed before leaving the MEX function.
      */
 	mxGPUDestroyGPUArray(lsf);
-	mxGPUDestroyGPUArray(ds);
 	mxGPUDestroyGPUArray(xpr);
 	mxGPUDestroyGPUArray(ypf);
 	mxGPUDestroyGPUArray(zpu);
