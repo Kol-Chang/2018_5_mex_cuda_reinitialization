@@ -51,7 +51,7 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 	cudaMemcpy((void *)dev_lsf, lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyHostToDevice);
 	//cudaMemset((void *)dev_re_lsf, (int)0, sizeof(double)*number_of_elements_lsf);
 
-	ExploreIdx<<<grid,block>>>(dev_re_lsf, dev_lsf, number_of_elements_lsf, rows, cols, pages);
+	ExploreIdx<<<block, thread>>>(dev_re_lsf, dev_lsf, number_of_elements_lsf, rows, cols, pages);
 
 	// copy results back 
 	cudaMemcpy(re_lsf, (void *)dev_re_lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyDeviceToHost);
