@@ -1,9 +1,12 @@
+#include "gpu/mxGPUArray.h"
+#include "tmwtypes.h"
 #include "mex.h"
 #include "math.h"
-#include "mexcudaReinitialization.hpp"
 #include <cuda_runtime_api.h>
 #include <algorithm> 
 #include <utility>
+
+#include "mexcudaReinitialization.hpp"
 
 /**	
  * convert subindices to global indices 

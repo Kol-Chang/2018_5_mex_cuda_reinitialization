@@ -1,5 +1,11 @@
-#include "mex.h"
 #include "gpu/mxGPUArray.h"
+#include "tmwtypes.h"
+#include "mex.h"
+#include "math.h"
+#include <cuda_runtime_api.h>
+#include <algorithm> 
+#include <utility>
+
 #include "mexcudaReinitialization.hpp"
 
 // enumerate input index
