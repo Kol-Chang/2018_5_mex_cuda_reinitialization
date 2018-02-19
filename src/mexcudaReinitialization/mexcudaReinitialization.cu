@@ -17,7 +17,9 @@ enum out_put{
 void mexFunction(int nlhs, mxArray * plhs[], int nrhs, mxArray const * prhs[])
 {
 	mxInitGPU();
-	
+
+	mexPrintf("inside mexFunction \n");
+
 	mxClassID category;
 
 	if(nrhs != 2){
