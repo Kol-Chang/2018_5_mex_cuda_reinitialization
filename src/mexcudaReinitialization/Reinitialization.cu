@@ -91,7 +91,7 @@ void boundary_correction(double * const dev_xpr, double * const dev_ypf, double 
 	double f0 = dev_lsf[idx]; // grab the left node
 	// fill in dev_xpr and make correction near boundary
 
-	dev_deltat[idx] = min2(min2(dx,dy,),dz);
+	dev_deltat[idx] = min2(min2(dx,dy),dz);
 
 	dev_xpr[idx] = dx;
 	int idx_right = sub2ind(row_idx, (col_idx < (cols-1)) ? col_idx+1 : col_idx+1-cols, pge_idx, rows, cols, pages );	
