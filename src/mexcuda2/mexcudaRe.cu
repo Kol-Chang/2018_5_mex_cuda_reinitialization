@@ -122,7 +122,7 @@ void mexFunction(int nlhs , mxArray *plhs[], int nrhs, mxArray const * prhs[])
  	double * dev_cur_lsf = (double *)(mxGPUGetData(cur_lsf)); // pointer to data on device
 
  	// call the computation routine
- 	Reinitialization(dev_re_lsf, lsf, 
+ 	Reinitialization(dev_re_lsf, dev_lsf, 
  		dev_xpr, dev_ypf, dev_zpu,
  		dev_new_lsf, dev_intermediate_lsf, dev_cur_lsf,
  		number_of_elements_lsf, dimension_array[0], dimension_array[1], dimension_array[2],
