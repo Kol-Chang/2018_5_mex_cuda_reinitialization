@@ -59,8 +59,8 @@ double dist_turn(double ds, double v0, double v2)
 
 __global__
 void boundary_correction(double * const dev_xpr, double * const dev_ypf, double * const dev_zpu,
-	double const * const dev_lsf, int number_of_elements_lsf, int rows, int cols, int pages,
-	double dx, double dy, double dz)
+	double const * const dev_lsf, double * const dev_cur_lsf,
+	int number_of_elements_lsf, int rows, int cols, int pages, double dx, double dy, double dz)
 {	
 	double epislon = 10e-10;
 
@@ -72,6 +72,8 @@ void boundary_correction(double * const dev_xpr, double * const dev_ypf, double 
 
 	if(idx > number_of_elements_lsf-1)
 		return;
+	
+	dev_cur_lsf[idx] = dev_lsf[idx]; // initialize current lsf
 
 	double f0 = dev_lsf[idx]; // grab the current/left/back/lower node
 	// fill in dev_xpr and make correction near boundary
@@ -185,6 +187,7 @@ void Reinitialization(double * const dev_re_lsf, double const * const dev_lsf,
 
 	// fill in dev_xpr,ypf,zpu
 	boundary_correction<<<block, thread>>>(dev_xpr, dev_ypf, dev_zpu, 
-		dev_lsf, number_of_elements_lsf, rows, cols, pages, dx, dy, dz);
+		dev_lsf, dev_cur_lsf,
+		number_of_elements_lsf, rows, cols, pages, dx, dy, dz);
 
 }
