@@ -1,6 +1,8 @@
 #include "mex.h"
 #include "gpu/mxGPUArray.h"
 
+#include "Re.hpp"
+
 // enumerate input index
 enum in_put{
 	level_set_function = 0,
@@ -20,6 +22,8 @@ void mexFunction(int nlhs , mxArray *plhs[], int nrhs, mxArray const * prhs[])
 	// Initialize the MathWorks GPU API.
     mxInitGPU();
 
+    mxClassID category;
+
     mexPrintf("2nd try ...\n");
 
     if(nrhs != 2){
@@ -28,11 +32,26 @@ void mexFunction(int nlhs , mxArray *plhs[], int nrhs, mxArray const * prhs[])
 	}
 
 	// assign level set function
-	if(mxIsGPUArray(prhs[level_set_function]))
-		mexPrintf("Get a GPU array \n");
-
+	
 	mxGPUArray const * lsf = mxGPUCreateFromMxArray(prhs[level_set_function]);
 	double const *dev_lsf = (double const *)(mxGPUGetDataReadOnly(lsf)); // pointer to input data on device
+
+	mwSize number_of_dimensions;
+	const mwSize *dimension_array;
+	size_t number_of_elements_lsf;
+
+	category = mxGPUGetClassID(lsf);
+	number_of_dimensions = mxGPUGetNumberOfDimensions(lsf);
+	dimension_array = mxGPUGetDimensions(lsf);
+	number_of_elements_lsf = mxGPUGetNumberOfElements(lsf);
+
+	if (category != mxDOUBLE_CLASS || number_of_dimensions != (mwSize)3 || !mxIsGPUArray(lsf)){
+		mexErrMsgIdAndTxt("mexReinitialization:Invalid_Input",
+			"Argument %d must be a 3 dimension array of double precision!",
+			level_set_function);
+	}
+
+
 
 	//
 	mxGPUArray const * ds = mxGPUCreateFromMxArray(prhs[grid_spacing]);
@@ -92,6 +111,8 @@ void mexFunction(int nlhs , mxArray *plhs[], int nrhs, mxArray const * prhs[])
                             				 mxGPUGetComplexity(lsf),
                             				 MX_GPU_DO_NOT_INITIALIZE);
  	double * dev_cur_lsf = (double *)(mxGPUGetData(cur_lsf)); // pointer to data on device
+
+
 
 
 
