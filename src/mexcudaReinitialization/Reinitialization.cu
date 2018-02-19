@@ -296,8 +296,8 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 	dim3 const thread(dimx, dimy, dimz);
 	dim3 const block((rows + thread.x - 1) / thread.x, (cols + thread.y - 1) / thread.y, (pages + thread.z - 1) / thread.z);
 
-	mexPrintf("thread dimension (%d,%d,%d)\n", thread.x, thread.y, thread.z);
-	mexPrintf("block dimension (%d,%d,%d)\n", block.x, block.y, block.z);
+	//mexPrintf("thread dimension (%d,%d,%d)\n", thread.x, thread.y, thread.z);
+	//mexPrintf("block dimension (%d,%d,%d)\n", block.x, block.y, block.z);
 
 	// allocate memory for input lsf and out put level set function
 	double * dev_lsf, * dev_re_lsf;
@@ -333,8 +333,8 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 		time_step_lsf<<<block, thread>>>(dev_new_lsf, dev_cur_lsf, dev_intermediate_lsf, dev_lsf, dev_xpr, dev_ypf, dev_zpu, 
 			number_of_elements_lsf, rows, cols, pages, dx, dy, dz, false); 
 
-		//std::swap(dev_new_lsf,dev_cur_lsf);
-		dev_cur_lsf = dev_new_lsf;
+		std::swap(dev_new_lsf,dev_cur_lsf);
+		//dev_cur_lsf = dev_new_lsf;
 	}
 
 
