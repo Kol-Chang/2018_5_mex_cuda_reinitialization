@@ -170,7 +170,7 @@ void time_step_lsf(double * const dev_new_lsf, double * const dev_intermediate_l
 		return;
 
 	double f0 = dev_cur_lsf[idx];
-	double p2m;
+	double p2m, p2, p2r, p2l;
 
 	// compute xR & xL
 	int idx_right = sub2ind(row_idx, (col_idx < (cols-1)) ? col_idx+1 : col_idx+1-cols, pge_idx, rows, cols, pages );
@@ -246,7 +246,7 @@ void time_step_lsf(double * const dev_new_lsf, double * const dev_intermediate_l
 
 	p2m = 0.5 * min_mod(p2, p2l) / pow(dz, 2);
 	double zpl = (dev_zpu[idx_lower]<dz) ? (dz-dev_zpu[idx_lower]) : dz;
-	fl = (zpl<dz) : 0 : fl;
+	fl = (zpl<dz) ? 0 : fl;
 	double zL = (f0-fl)/zpl + zpl * p2m;
 
 	// calculate time step
