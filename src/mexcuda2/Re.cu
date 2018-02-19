@@ -16,7 +16,7 @@ int sub2ind(int const row_idx, int const col_idx, int const pge_idx, int const r
 }
 
 
-_global_ explore(double * const dev_re_lsf, double const * const dev_lsf,
+__global__ explore(double * const dev_re_lsf, double const * const dev_lsf,
 	int number_of_elements_lsf, int rows, int cols, int pages)
 {
 	int row_idx = blockIdx.x * blockDim.x + threadIdx.x;
