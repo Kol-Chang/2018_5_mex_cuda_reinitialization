@@ -74,7 +74,7 @@ void ExploreIdx(double * const dev_re_lsf, double const * const dev_lsf, int con
 
 __global__
 void boundary_correction(double * const dev_xpr, double * const dev_ypf, double * const dev_zpu,
-	double const * const dev_lsf, int const number_of_elements_lsf, int const rows, int const cols, int const pages,
+	double const * const dev_lsf, int cnumber_of_elements_lsf, int rows, int cols, int pages,
 	double dx, double dy, double dz)
 {	
 	double epislon = 10e-10;
@@ -151,7 +151,127 @@ void boundary_correction(double * const dev_xpr, double * const dev_ypf, double 
 			dev_ypf[idx] = dist_turn(dz,f0,f2);
 		}
 	}
+}
 
+__global__ 
+void time_step_lsf(double * const dev_new_lsf, double * const dev_intermediate_lsf, double const * const dev_cur_lsf, double const * const dev_lsf,
+	double const * const dev_xpr, double const * const dev_ypf, double const * const dev_zpu,
+	int number_of_elements_lsf, int rows, int cols, int pages, double dx, double dy, double dz, bool const flag)
+{
+	int row_idx = blockIdx.x * blockDim.x + threadIdx.x;
+	int col_idx = blockIdx.y * blockDim.y + threadIdx.y;
+	int pge_idx = blockIdx.z * blockDim.z + threadIdx.z;
+
+	int idx = sub2ind(row_idx, col_idx, pge_idx, rows, cols, pages);
+
+	if(idx > number_of_elements_lsf)
+		return;
+
+	double f0 = dev_cur_lsf[idx];
+	double p2m;
+
+	// compute xR & xL
+	int idx_right = sub2ind(row_idx, (col_idx < (cols-1)) ? col_idx+1 : col_idx+1-cols, pge_idx, rows, cols, pages );
+	int idx_2right = sub2ind(row_idx, (col_idx < (cols-2)) ? col_idx+2 : col_idx+2-cols, pge_idx, rows, cols, pages );
+	int idx_left = sub2ind(row_idx, (col_idx > 0) ? col_idx-1 : col_idx-1+cols, pge_idx, rows, cols, pages);
+	int idx_2left = sub2ind(row_idx, (col_idx > 1) ? col_idx-2 : col_idx-2+cols, pge_idx, rows, cols, pages);
+	double fr = dev_cur_lsf[idx_right];
+	double f2r = dev_cur_lsf[idx_2right];
+	double fl = dev_cur_lsf[idx_left];
+	double f2l = dev_cur_lsf[idx_2left];
+
+	p2 = fr - 2.0 * f0 + fl;
+
+	p2r = f0 - 2.0 * fr + f2r;
+	p2l = f2l - 2.0 * fl + f0;
+
+	p2m = 0.5 * min_mod(p2, p2r) / pow(dx, 2);
+	double xpr = dev_xpr[idx];
+	fr = (xpr<dx) ? 0 : fr;
+	double xR = (fr-f0)/xpr - xpr * p2m;
+
+	p2m = 0.5 * min_mod(p2, p2l) / pow(dx, 2);
+	double xpl = (dev_xpr[idx_left]<dx) ? (dx-dev_xpr[idx_left]) : dx;
+	fl = (xpl<dx) ? 0 : fl;
+	double xL = (f0-fl) / xpl + xpl * p2m;
+
+	// compute yF & yB
+	int idx_front = sub2ind( (row_idx < (rows-1)) ? row_idx+1 : row_idx+1-rows, col_idx, pge_idx, rows, cols, pages);
+	int idx_2front = sub2ind( (row_idx < (rows-2)) ? row_idx+2 : row_idx+2-rows, col_idx, pge_idx, rows, cols, pages);
+	int idx_back = sub2ind( (row_idx > 0) ? row_idx-1 : row_idx-1+rows, col_idx, pge_idx, rows, cols, pages );
+	int idx_2back = sub2ind( (row_idx > 1) ? row_idx-2 : row_idx-2+rows, col_idx, pge_idx, rows, cols, pages );
+
+	fr = dev_cur_lsf[idx_front];
+	f2r = dev_cur_lsf[idx_2front];
+	fl = dev_cur_lsf[idx_back];
+	f2l = dev_cur_lsf[idx_2back];
+
+	p2 = fr - 2.0 * f0 + fl;
+
+	p2r = f0 - 2.0 * fr + f2r;
+	p2l = f2l - 2.0 * fl + f0;
+
+	p2m = 0.5 * min_mod(p2, p2r) / pow(dy, 2);
+	double ypf = dev_ypf[idx];
+	fr = (ypf<dy) ? 0 : fr;
+	double yF = (fr-f0)/ypf - ypf * p2m;
+
+	p2m = 0.5 * min_mod(p2, p2l) / pow(dy, 2);
+	double ypb = (dev_ypf[idx_back]<dy) ? (dy-dev_ypf[idx_back]) : dy;
+	fl = (ypb<dy) ? 0 : fl;
+	double yB = (f0-fl) / ypb + ypb * p2m;
+
+	// compute zU & zD
+	int idx_upper = sub2ind( row_idx, col_idx, (pge_idx < (pages-1)) ? pge_idx+1 : pge_idx+1-pages, rows, cols, pages );
+	int idx_2upper = sub2ind( row_idx, col_idx, (pge_idx < (pages-2)) ? pge_idx+2 : pge_idx+2-pages, rows, cols, pages );
+	int idx_lower = sub2ind(row_idx, col_idx, (pge_idx > 0) ? pge_idx-1: pge_idx-1+pages, rows, cols, pages);
+	int idx_2lower = sub2ind(row_idx, col_idx, (pge_idx > 1) ? pge_idx-2: pge_idx-2+pages, rows, cols, pages);
+
+	fr = dev_cur_lsf[idx_upper];
+	f2r = dev_cur_lsf[idx_2upper];
+	fl = dev_cur_lsf[idx_lower];
+	f2l = dev_cur_lsf[idx_2lower];
+
+	p2 = fr - 2.0 * f0 + fl;
+
+	p2r = f0 - 2.0 * fr + f2r;
+	p2l = f2l - 2.0 * fl + f0;
+
+	p2m = 0.5 * min_mod(p2, p2r) / pow(dz, 2);
+	double zpu = dev_zpu[idx];
+	fr = (zpu<dz) ? 0 : fr;
+	double zU = (fr-f0)/zpu - zpu * p2m;
+
+	p2m = 0.5 * min_mod(p2, p2l) / pow(dz, 2);
+	double zpl = (dev_zpu[idx_lower]<dz) ? (dz-dev_zpu[idx_lower]) : dz;
+	fl = (zpl<dz) : 0 : fl;
+	double zL = (f0-fl)/zpl + zpl * p2m;
+
+	// calculate time step
+	double step;
+	double deltat = min2(min2(xpr,xpl),min2(ypb,ypf));
+	deltat = min2(deltat, min2(zpl,zpu));
+	deltat = 0.3 * deltat;
+	if(dev_lsf[idx] < 0) // if inside
+	{
+		step = (sqrt( 	max2(pow(min2(0,xL),2), pow(max2(0,xR),2)) + 
+						max2(pow(min2(0,yB),2), pow(max2(0,yF),2)) +
+						max2(pow(min2(0,zL),2), pow(max2(0,zU),2)) ) - 1)
+				* deltat * (-1.0);
+	}else{
+		step = (sqrt( 	max2(pow(max2(0,xL),2), pow(min2(0,xR),2)) + 
+						max2(pow(max2(0,yB),2), pow(min2(0,yF),2)) +
+						max2(pow(max2(0,zL),2), pow(min2(0,zU),2)) ) - 1)
+				* deltat * (1.0);
+	}
+
+	// flag is true : calculate itermediate lsf
+	// flag is false : calculate a new lsf
+	if(flag){
+		dev_intermediate_lsf[idx] = dev_cur_lsf[idx] - step;
+	}else{
+		dev_new_lsf[idx] = (dev_cur_lsf[idx] + dev_intermediate_lsf[idx] - step) / 2;
+	}
 
 }
 
@@ -189,25 +309,47 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 	//cudaMemset((void *)dev_re_lsf, (int)0, sizeof(double)*number_of_elements_lsf);
 
 	// allocate memory for boundary corrections
-	double * dev_xpr, * dev_ypf, * dev_zpu, *dev_deltat;
+	double * dev_xpr, * dev_ypf, * dev_zpu;
 	cudaMalloc((void **)&dev_xpr, sizeof(double)*number_of_elements_lsf);
 	cudaMalloc((void **)&dev_ypf, sizeof(double)*number_of_elements_lsf);
 	cudaMalloc((void **)&dev_zpu, sizeof(double)*number_of_elements_lsf);
-	cudaMalloc((void **)&dev_deltat, sizeof(double)*number_of_elements_lsf);
 
 	boundary_correction<<<block, thread>>>(dev_xpr, dev_ypf, dev_zpu, dev_lsf, number_of_elements_lsf, rows, cols, pages, dx, dy, dz);
 
-	ExploreIdx<<<block, thread>>>(dev_re_lsf, dev_lsf, number_of_elements_lsf, rows, cols, pages);
+	doulbe * dev_new_lsf, * dev_intermediate_lsf, * dev_cur_lsf;
+	cudaMalloc((void **)&dev_new_lsf, sizeof(double)*number_of_elements_lsf);
+	cudaMalloc((void **)&dev_intermediate_lsf, sizeof(double)*number_of_elements_lsf);
+	cudaMalloc((void **)&dev_cur_lsf, sizeof(double)*number_of_elements_lsf);
+
+	cudaMemcpy((void *)dev_cur_lsf, lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyHostToDevice);
+
+
+	time_step_lsf(dev_new_lsf, dev_intermediate_lsf, dev_cur_lsf, dev_lsf, dev_xpr, dev_ypf, dev_zpu,
+	 number_of_elements_lsf, rows, cols, pages, dx, dy, dz, flag)
+
+	for(int i = 0: i < 100; ++i){
+		// fill in dev_intermediate_lsf
+		time_step_lsf(dev_new_lsf, dev_intermediate_lsf, dev_cur_lsf, dev_lsf, dev_xpr, dev_ypf, dev_zpu, 
+			number_of_elements_lsf, rows, cols, pages, dx, dy, dz, true); 
+		// fill in dev_new_lsf
+		time_step_lsf(dev_new_lsf, dev_cur_lsf, dev_intermediate_lsf, dev_lsf, dev_xpr, dev_ypf, dev_zpu, 
+			number_of_elements_lsf, rows, cols, pages, dx, dy, dz, true); 
+
+		std::swap(dev_new_lsf,dev_cur_lsf);
+	}
+
 
 	// copy results back 
-	cudaMemcpy(re_lsf, (void *)dev_re_lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyDeviceToHost);
+	cudaMemcpy(re_lsf, (void *)dev_cur_lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyDeviceToHost);
 
 	cudaFree(dev_lsf);
 	cudaFree(dev_re_lsf);
 	cudaFree(dev_xpr);
 	cudaFree(dev_ypf);
-	cudaFree(dev_zpu);
-	cudaFree(dev_deltat);
+	cudaFree(dev_zpu)
+	cudaFree(dev_new_lsf);
+	cudaFree(dev_intermediate_lsf);
+	cudaFree(dev_cur_lsf);
 
 }
 
