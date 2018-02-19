@@ -1,6 +1,8 @@
 #include "mex.h"
 #include "mexcudaReinitialization.hpp"
 #include <cuda_runtime_api.h>
+#include <algorithm> 
+#include <utility>
 
 /**	
  * convert subindices to global indices 
