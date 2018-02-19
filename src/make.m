@@ -22,7 +22,7 @@ if ismac
 	mex(f1,f2,f3)
 elseif isunix
 	%mex(f1,f2,f3)
-	mex(f1,f2,f3,['CXXFLAGS="$CXXFLAGS -Wall"'])
+	mex(f1,f2,f3,['CXXFLAGS="$CXXFLAGS -Wall -std=c99"'])
 elseif ispc
 	%mex('CFLAGS="\$CFLAGS -std=c99"',f1,f2)
 	%mex -v CXXFLAGS='$CXXFLAGS -std=gnu99' ...
