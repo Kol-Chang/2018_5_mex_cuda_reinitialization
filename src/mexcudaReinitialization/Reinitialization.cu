@@ -76,7 +76,7 @@ void ExploreIdx(double * const dev_re_lsf, double const * const dev_lsf, int con
 
 __global__
 void boundary_correction(double * const dev_xpr, double * const dev_ypf, double * const dev_zpu,
-	double const * const dev_lsf, int cnumber_of_elements_lsf, int rows, int cols, int pages,
+	double const * const dev_lsf, int number_of_elements_lsf, int rows, int cols, int pages,
 	double dx, double dy, double dz)
 {	
 	double epislon = 10e-10;
