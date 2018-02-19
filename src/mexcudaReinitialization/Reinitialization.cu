@@ -36,13 +36,13 @@ double max2(double x, double y)
 __device__ inline
 double sign(double x)
 {
-	return ( x>0 ? 1 : -1 );
+	return ( x>0 ? 1. : -1. );
 }
 
 __device__ inline
 double discriminant(double p2, double v0, double v2)
 {
-	return ( pow(0.5*p2-v0-v2,2) - 4.*v0*v2 );
+	return ( pow((0.5*p2-v0-v2),2) - 4.*v0*v2 );
 }
 
 __device__ inline
@@ -57,23 +57,6 @@ double dist_turn(double ds, double v0, double v2)
 	return ( ds * v0 / (v0 - v2) );
 }
 
-__global__ 
-void ExploreIdx(double * const dev_re_lsf, double const * const dev_lsf, int const number_of_elements_lsf,
-	int const rows, int const cols, int const pages)
-{
-	int row_idx = blockIdx.x * blockDim.x + threadIdx.x;
-	int col_idx = blockIdx.y * blockDim.y + threadIdx.y;
-	int pge_idx = blockIdx.z * blockDim.z + threadIdx.z;
-
-	//int idx = pge_idx * rows * cols + col_idx * rows + row_idx;
-	int idx = sub2ind(row_idx, col_idx, pge_idx, rows, cols, pages);
-
-	if(idx > number_of_elements_lsf)
-		return;
-
-	int right = sub2ind(row_idx, (col_idx < (cols-1)) ? col_idx+1 : col_idx+1-cols, pge_idx, rows, cols, pages );
-	dev_re_lsf[idx] = dev_lsf[right];
-} 
 
 __global__
 void boundary_correction(double * const dev_xpr, double * const dev_ypf, double * const dev_zpu,
@@ -88,7 +71,7 @@ void boundary_correction(double * const dev_xpr, double * const dev_ypf, double 
 
 	int idx = sub2ind(row_idx, col_idx, pge_idx, rows, cols, pages);
 
-	if(idx > number_of_elements_lsf)
+	if(idx > number_of_elements_lsf-1)
 		return;
 
 	double f0 = dev_lsf[idx]; // grab the left node
@@ -176,7 +159,7 @@ void time_step_lsf(double * const dev_new_lsf, double * const dev_intermediate_l
 
 	int idx = sub2ind(row_idx, col_idx, pge_idx, rows, cols, pages);
 
-	if(idx > number_of_elements_lsf)
+	if(idx > number_of_elements_lsf-1)
 		return;
 
 	double f0 = dev_cur_lsf[idx];
