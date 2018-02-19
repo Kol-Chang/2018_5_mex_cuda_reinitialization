@@ -379,10 +379,20 @@ for(int i = 0; i < -1; ++i){
 		mexPrintf("dev_lsf[%d] : %f \n", i, re_lsf[i] );
 	}
 
-	explore<<<block, thread>>>(dev_intermediate_lsf, dev_lsf, number_of_elements_lsf, rows, cols, pages);
+	//explore<<<block, thread>>>(dev_intermediate_lsf, dev_lsf, number_of_elements_lsf, rows, cols, pages);
 	cudaMemcpy(re_lsf, (void *)dev_intermediate_lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyDeviceToHost);
 	for(int i = 0;i < 10; i++){
 		mexPrintf("dev_intermediate_lsf[%d] : %f \n", i, re_lsf[i] );
+	}
+
+	cudaMemcpy(re_lsf, (void *)dev_cur_lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyDeviceToHost);
+	for(int i = 0;i < 10; i++){
+		mexPrintf("dev_cur_lsf[%d] : %f \n", i, re_lsf[i] );
+	}
+
+	cudaMemcpy(re_lsf, (void *)dev_new_lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyDeviceToHost);
+	for(int i = 0;i < 10; i++){
+		mexPrintf("dev_new_lsf[%d] : %f \n", i, re_lsf[i] );
 	}
 
 	
