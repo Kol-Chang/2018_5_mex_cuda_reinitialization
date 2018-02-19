@@ -323,11 +323,11 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 	// allocate memory for input lsf and out put level set function
 	double * dev_lsf;
 	cudaMalloc((void **)&dev_lsf, sizeof(double)*number_of_elements_lsf);
-
-	// record information 
-	//bool * dev_mask, * dev_mxr, * dev_mxl, * dev_myf, * dev_myb, * dev_mzu, * dev_mzd;
-
 	cudaMemcpy((void *)dev_lsf, lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyHostToDevice);
+	cudaMemcpy(re_lsf, (void *)dev_lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyDeviceToHost);
+	for(int i = 0;i < 10; i++){
+		mexPrintf("dev_cur_lsf[%d] : %f \n", i, re_lsf[i] );
+	}
 	//cudaMemset((void *)dev_re_lsf, (int)0, sizeof(double)*number_of_elements_lsf);
 
 
