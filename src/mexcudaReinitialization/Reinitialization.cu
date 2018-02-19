@@ -323,9 +323,8 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 	//mexPrintf("block dimension (%d,%d,%d)\n", block.x, block.y, block.z);
 
 	// allocate memory for input lsf and out put level set function
-	double * dev_lsf, * dev_re_lsf;
+	double * dev_lsf;
 	cudaMalloc((void **)&dev_lsf, sizeof(double)*number_of_elements_lsf);
-	cudaMalloc((void **)&dev_re_lsf, sizeof(double)*number_of_elements_lsf);
 
 	// record information 
 	//bool * dev_mask, * dev_mxr, * dev_mxl, * dev_myf, * dev_myb, * dev_mzu, * dev_mzd;
@@ -365,7 +364,6 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 	cudaMemcpy(re_lsf, (void *)dev_cur_lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyDeviceToHost);
 
 	cudaFree(dev_lsf);
-	cudaFree(dev_re_lsf);
 	cudaFree(dev_xpr);
 	cudaFree(dev_ypf);
 	cudaFree(dev_zpu);
