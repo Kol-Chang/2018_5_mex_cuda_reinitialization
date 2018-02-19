@@ -1,6 +1,7 @@
 % test the mexReinitialization scheme
 
-addpath(genpath('mexcudaReinitialization'))
+%addpath(genpath('mexcudaReinitialization'))
+addpath(genpath('..'))
 %path_test % test if  I can call function from another folder
 
 
@@ -176,9 +177,9 @@ tic
 		disp(['area error before reinitialization ', num2str(ii), ': ', num2str(cur_ara_BR/map.Suf_Area)]);
 		disp(['volume error before reinitialization ', num2str(ii), ': ', num2str(cur_vol_BR/map.En_Volume)]);
 	%tic;
-		%map.reinitialization( reshape(F_new, map.GD3.Size) );
+		map.reinitialization( reshape(F_new, map.GD3.Size) );
 		%map.F = mexReinitialization(map.F, shift_mat,[map.GD3.Dx,map.GD3.Dy,map.GD3.Dz]);
-		map.F = mexcudaReinitialization(map.F, [dx, dy, dz]);
+		%map.F = mexcudaReinitialization(map.F, [dx, dy, dz]);
 	%disp('reini time');
 	%toc;
 	end
