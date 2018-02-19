@@ -196,7 +196,7 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 	//cudaMemset((void *)dev_re_lsf, (int)0, sizeof(double)*number_of_elements_lsf);
 
 	// allocate memory for boundary corrections
-	double * dev_xpr, * dev_ypf, * dev_zpu, dev_deltat;
+	double * dev_xpr, * dev_ypf, * dev_zpu, *dev_deltat;
 	cudaMalloc((void **)&dev_xpr, sizeof(double)*number_of_elements_lsf);
 	cudaMalloc((void **)&dev_ypf, sizeof(double)*number_of_elements_lsf);
 	cudaMalloc((void **)&dev_zpu, sizeof(double)*number_of_elements_lsf);
