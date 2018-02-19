@@ -1,4 +1,5 @@
 #include "mex.h"
+#include "gpu/mxGPUArray.h"
 #include "mexcudaReinitialization.hpp"
 
 // enumerate input index
@@ -15,6 +16,7 @@ enum out_put{
 // the gateway function
 void mexFunction(int nlhs, mxArray * plhs[], int nrhs, mxArray const * prhs[])
 {
+	mxInitGPU();
 	
 	mxClassID category;
 
