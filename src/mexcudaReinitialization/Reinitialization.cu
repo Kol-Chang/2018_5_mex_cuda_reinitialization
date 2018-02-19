@@ -2,6 +2,16 @@
 #include "mexcudaReinitialization.hpp"
 #include <cuda_runtime_api.h>
 
+/**	
+ * convert subindices to global indices 
+ * for a 3d array stored in colum major
+ */
+__device__ inline
+int sub2ind(int const row_idx, int const col_idx, int const pge_idx, int const rows, int const cols, int const pages)
+{
+	int idx = pge_idx * rows * cols + col_idx * rows + row_idx;
+}
+
 __global__ 
 void ExploreIdx(double * const dev_re_lsf, double const * const dev_lsf, int const number_of_elements_lsf,
 	int const rows, int const cols, int const pages)
@@ -10,7 +20,8 @@ void ExploreIdx(double * const dev_re_lsf, double const * const dev_lsf, int con
 	int col_idx = blockIdx.y * blockDim.y + threadIdx.y;
 	int pge_idx = blockIdx.z * blockDim.z + threadIdx.z;
 
-	int idx = pge_idx * rows * cols + col_idx * rows + row_idx;
+	//int idx = pge_idx * rows * cols + col_idx * rows + row_idx;
+	int idx = sub2ind(row_idx, col_idx, pge_idx, rows, cols, pages);
 
 	if(idx > number_of_elements_lsf)
 		return;
