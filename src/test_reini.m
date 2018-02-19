@@ -75,8 +75,8 @@ addpath(genpath('mexcudaReinitialization'))
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  map.plotSurface(0,1,'g')
 
- loops = 0;
- Skip = 20;
+ loops = 100;
+ Skip = 1;
  SkipR = 1;
  Dt = 2 * map.GD3.Dx ^ 4 / Kappa; % it is more like Dt*zeta(the drag coefficient)
 
