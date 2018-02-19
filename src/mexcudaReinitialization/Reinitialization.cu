@@ -57,7 +57,6 @@ double dist_turn(double ds, double v0, double v2)
 	return ( ds * v0 / (v0 - v2) );
 }
 
-
 __global__
 void boundary_correction(double * const dev_xpr, double * const dev_ypf, double * const dev_zpu,
 	double const * const dev_lsf, int number_of_elements_lsf, int rows, int cols, int pages,
@@ -339,18 +338,23 @@ void Reinitialization(double * re_lsf, double const * lsf, int const number_of_e
 		time_step_lsf<<<block, thread>>>(dev_new_lsf, dev_cur_lsf, dev_intermediate_lsf, dev_lsf, dev_xpr, dev_ypf, dev_zpu, 
 			number_of_elements_lsf, rows, cols, pages, dx, dy, dz, false); 
 
-		//std::swap(dev_new_lsf,dev_cur_lsf);
+		std::swap(dev_new_lsf,dev_cur_lsf);
 		//dev_cur_lsf = dev_new_lsf;
 
-		double * tmp;
-		tmp = dev_new_lsf;
-		dev_new_lsf = dev_cur_lsf;
-		dev_cur_lsf = tmp;
+		//double * tmp;
+		//tmp = dev_new_lsf;
+		//dev_new_lsf = dev_cur_lsf;
+		//dev_cur_lsf = tmp;
 	}
 
 
 	// copy results back 
-	cudaMemcpy((void *)re_lsf, (const void *)dev_cur_lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyDeviceToHost);
+	//cudaMemcpy((void *)re_lsf, (const void *)dev_cur_lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyDeviceToHost);
+
+	cudaMemcpy((void *)re_lsf, dev_cur_lsf, sizeof(double)*number_of_elements_lsf, cudaMemcpyDeviceToHost);
+	for(int i = 0;i < 10; i++){
+		mexPrintf("dev_cur_lsf[%d] : %f \n", i, re_lsf[i] );
+	}
 
 	cudaFree(dev_lsf);
 	cudaFree(dev_xpr);
