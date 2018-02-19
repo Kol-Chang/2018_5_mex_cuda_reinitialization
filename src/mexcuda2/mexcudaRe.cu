@@ -15,7 +15,7 @@ enum out_put{
 /**
  * MEX gateway
  */
-void mexFunction(int nlhs , mxArray *plhs[], int nrhs, mxArray const * prhs[])
+void mexFunction(int nlhs , mxArray *plhs[], int nrhs, mxArray const * const prhs[])
 {
 	// Initialize the MathWorks GPU API.
     mxInitGPU();
@@ -31,6 +31,11 @@ void mexFunction(int nlhs , mxArray *plhs[], int nrhs, mxArray const * prhs[])
 	if(mxIsGPUArray(prhs[level_set_function]))
 		mexPrintf("Get a GPU array \n");
 
+	mxGPUArray const * lsf = mxGPUCreateFromMxArray(prhs[level_set_function]);
+
+
+
+	mxGPUDestroyGPUArray(lsf);
 }
 
 
