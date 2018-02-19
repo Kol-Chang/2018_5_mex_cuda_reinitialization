@@ -20,7 +20,9 @@ void mexFunction(int nlhs , mxArray *plhs[], int nrhs, mxArray const *prhs[])
 	// Initialize the MathWorks GPU API.
     mxInitGPU();
 
-    mexPrintf("2nd try ...");
+    mexPrintf("2nd try ...\n");
+
+    
 
 }
 
