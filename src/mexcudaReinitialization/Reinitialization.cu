@@ -10,6 +10,7 @@ __device__ inline
 int sub2ind(int const row_idx, int const col_idx, int const pge_idx, int const rows, int const cols, int const pages)
 {
 	int idx = pge_idx * rows * cols + col_idx * rows + row_idx;
+	return idx;
 }
 
 __global__ 
