@@ -151,7 +151,7 @@ void boundary_correction(double * const dev_xpr, double * const dev_ypf, double 
 
 
 __global__ 
-void time_step_lsf(double * dev_new_lsf, double * dev_intermediate_lsf, double * dev_cur_lsf, double * dev_lsf,
+void time_step_lsf(double * dev_new_lsf, double * dev_intermediate_lsf, double * dev_cur_lsf, double const * dev_lsf,
 	double const * const dev_xpr, double const * const dev_ypf, double const * const dev_zpu,
 	int number_of_elements_lsf, int rows, int cols, int pages, double dx, double dy, double dz, bool const flag)
 {
