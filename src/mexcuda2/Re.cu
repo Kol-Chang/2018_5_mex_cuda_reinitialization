@@ -300,7 +300,7 @@ void explore(double * const dev_re_lsf, double const * const dev_lsf,
 	if(idx > number_of_elements_lsf-1)
 		return;
 
-	dev_re_lsf[idx] = 3. * dev_lsf[idx];
+	dev_re_lsf[idx] = 1. * dev_lsf[idx];
 }
 
 void Reinitialization(double * const dev_re_lsf, double const * const dev_lsf, 
@@ -340,4 +340,5 @@ void Reinitialization(double * const dev_re_lsf, double const * const dev_lsf,
 
 	}
 
+	explore<<<block, thread>>>(dev_re_lsf, dev_cur_lsf, number_of_elements_lsf, rows, cols, pages);
 }
