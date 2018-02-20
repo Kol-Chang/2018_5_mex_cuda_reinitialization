@@ -303,6 +303,22 @@ void explore(double * const dev_re_lsf, double const * const dev_lsf,
 	dev_re_lsf[idx] = 3. * dev_lsf[idx];
 }
 
+__global__ 
+void copy_array(double * const dev_re_lsf, double const * const dev_lsf,
+	int number_of_elements_lsf, int rows, int cols, int pages)
+{
+	int row_idx = blockIdx.x * blockDim.x + threadIdx.x;
+	int col_idx = blockIdx.y * blockDim.y + threadIdx.y;
+	int pge_idx = blockIdx.z * blockDim.z + threadIdx.z;
+
+	int idx = sub2ind(row_idx, col_idx, pge_idx, rows, cols, pages);
+
+	if(idx > number_of_elements_lsf-1)
+		return;
+
+	dev_re_lsf[idx] = dev_lsf[idx];
+}
+
 void Reinitialization(double * const dev_re_lsf, double const * const dev_lsf, 
 	double * const dev_xpr, double * const dev_ypf, double * const dev_zpu, 
 	double * dev_new_lsf, double * dev_intermediate_lsf, double * dev_cur_lsf,
@@ -346,5 +362,5 @@ void Reinitialization(double * const dev_re_lsf, double const * const dev_lsf,
 
 	//std::swap(dev_re_lsf,dev_xpr);
 
-	//explore<<<block, thread>>>(dev_re_lsf, dev_cur_lsf, number_of_elements_lsf, rows, cols, pages);
+	copy_array<<<block, thread>>>(dev_re_lsf, dev_cur_lsf, number_of_elements_lsf, rows, cols, pages);
 }
