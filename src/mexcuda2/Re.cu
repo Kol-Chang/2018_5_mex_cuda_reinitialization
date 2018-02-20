@@ -344,7 +344,7 @@ void Reinitialization(double * const dev_re_lsf, double const * const dev_lsf,
 
 	}
 
-	std::swap(dev_re_lsf,dev_xpr);
+	//std::swap(dev_re_lsf,dev_xpr);
 
 	//explore<<<block, thread>>>(dev_re_lsf, dev_cur_lsf, number_of_elements_lsf, rows, cols, pages);
 }
