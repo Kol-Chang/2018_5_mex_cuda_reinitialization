@@ -319,7 +319,7 @@ void copy_array(double * const dev_re_lsf, double const * const dev_lsf,
 	dev_re_lsf[idx] = dev_lsf[idx];
 }
 
-void Reinitialization(double * const dev_re_lsf, double const * const dev_lsf, 
+void Reinitialization(double * dev_re_lsf, double const * const dev_lsf, 
 	double * const dev_xpr, double * const dev_ypf, double * const dev_zpu, 
 	double * dev_new_lsf, double * dev_intermediate_lsf, double * dev_cur_lsf,
 	int const number_of_elements_lsf, int const rows, int const cols, int const pages,
@@ -339,28 +339,41 @@ void Reinitialization(double * const dev_re_lsf, double const * const dev_lsf,
 
 	// fill in dev_xpr,ypf,zpu
 	
+	//boundary_correction<<<block, thread>>>(dev_xpr, dev_ypf, dev_zpu, 
+	//	dev_lsf, dev_cur_lsf,
+	//	number_of_elements_lsf, rows, cols, pages, dx, dy, dz);
+
 	boundary_correction<<<block, thread>>>(dev_xpr, dev_ypf, dev_zpu, 
-		dev_lsf, dev_cur_lsf,
+		dev_lsf, dev_re_lsf,
 		number_of_elements_lsf, rows, cols, pages, dx, dy, dz);
 
 	// iteration
 	for(int i = 0;i < 1; ++i){
 		//cudaDeviceSynchronize();
-		time_step_lsf<<<block, thread>>>(dev_new_lsf, dev_intermediate_lsf, dev_cur_lsf, dev_lsf, 
+		//time_step_lsf<<<block, thread>>>(dev_new_lsf, dev_intermediate_lsf, dev_cur_lsf, dev_lsf, 
+		//	dev_xpr, dev_ypf, dev_zpu, 
+		//	number_of_elements_lsf, rows, cols, pages, dx, dy, dz, true); 	
+
+		time_step_lsf<<<block, thread>>>(dev_new_lsf, dev_intermediate_lsf, dev_re_lsf, dev_lsf, 
 			dev_xpr, dev_ypf, dev_zpu, 
 			number_of_elements_lsf, rows, cols, pages, dx, dy, dz, true); 	
 
 		//cudaDeviceSynchronize();
-		time_step_lsf<<<block, thread>>>(dev_new_lsf, dev_cur_lsf, dev_intermediate_lsf, dev_lsf, 
+		//time_step_lsf<<<block, thread>>>(dev_new_lsf, dev_cur_lsf, dev_intermediate_lsf, dev_lsf, 
+		//	dev_xpr, dev_ypf, dev_zpu, 
+		//	number_of_elements_lsf, rows, cols, pages, dx, dy, dz, false);
+
+		time_step_lsf<<<block, thread>>>(dev_new_lsf, dev_re_lsf, dev_intermediate_lsf, dev_lsf, 
 			dev_xpr, dev_ypf, dev_zpu, 
 			number_of_elements_lsf, rows, cols, pages, dx, dy, dz, false); 
 
 		//cudaDeviceSynchronize();
-		std::swap(dev_new_lsf,dev_cur_lsf);
+		//std::swap(dev_new_lsf,dev_cur_lsf);
+		std::swap(dev_new_lsf,dev_re_lsf);
 
 	}
 
 	//std::swap(dev_re_lsf,dev_xpr);
 
-	copy_array<<<block, thread>>>(dev_re_lsf, dev_cur_lsf, number_of_elements_lsf, rows, cols, pages);
+	//copy_array<<<block, thread>>>(dev_re_lsf, dev_cur_lsf, number_of_elements_lsf, rows, cols, pages);
 }
