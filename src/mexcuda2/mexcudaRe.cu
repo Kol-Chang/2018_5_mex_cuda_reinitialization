@@ -131,7 +131,10 @@ void mexFunction(int nlhs , mxArray *plhs[], int nrhs, mxArray const * prhs[])
 
 
  	/* Wrap the result up as a MATLAB gpuArray for return. */
-    plhs[reinitialized_lsf] = mxGPUCreateMxArrayOnGPU(re_lsf);
+    //plhs[reinitialized_lsf] = mxGPUCreateMxArrayOnGPU(re_lsf);
+
+	/* Wrap the result up as a MATLAB cpuArray for return. */
+    plhs[reinitialized_lsf] = mxGPUCreateMxArrayOnCPU(re_lsf);
 
     /*
      * The mxGPUArray pointers are host-side structures that refer to device
