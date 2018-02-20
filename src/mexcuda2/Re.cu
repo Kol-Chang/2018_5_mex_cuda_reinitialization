@@ -329,17 +329,17 @@ void Reinitialization(double * const dev_re_lsf, double const * const dev_lsf,
 
 	// iteration
 	for(int i = 0;i < -1; ++i){
-		cudaDeviceSynchronize();
+		//cudaDeviceSynchronize();
 		time_step_lsf<<<block, thread>>>(dev_new_lsf, dev_intermediate_lsf, dev_cur_lsf, dev_lsf, 
 			dev_xpr, dev_ypf, dev_zpu, 
 			number_of_elements_lsf, rows, cols, pages, dx, dy, dz, true); 	
 
-		cudaDeviceSynchronize();
+		//cudaDeviceSynchronize();
 		time_step_lsf<<<block, thread>>>(dev_new_lsf, dev_cur_lsf, dev_intermediate_lsf, dev_lsf, 
 			dev_xpr, dev_ypf, dev_zpu, 
 			number_of_elements_lsf, rows, cols, pages, dx, dy, dz, false); 
 
-		cudaDeviceSynchronize();
+		//cudaDeviceSynchronize();
 		std::swap(dev_new_lsf,dev_cur_lsf);
 
 	}
