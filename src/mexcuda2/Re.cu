@@ -323,9 +323,9 @@ void Reinitialization(double * const dev_re_lsf, double const * const dev_lsf,
 
 	// fill in dev_xpr,ypf,zpu
 	
-	//boundary_correction<<<block, thread>>>(dev_xpr, dev_ypf, dev_zpu, 
-	//	dev_lsf, dev_cur_lsf,
-	//	number_of_elements_lsf, rows, cols, pages, dx, dy, dz);
+	boundary_correction<<<block, thread>>>(dev_xpr, dev_ypf, dev_zpu, 
+		dev_lsf, dev_cur_lsf,
+		number_of_elements_lsf, rows, cols, pages, dx, dy, dz);
 
 	// iteration
 	for(int i = 0;i < -1; ++i){
