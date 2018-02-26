@@ -50,7 +50,7 @@ void mexFunction(int nlhs , mxArray *plhs[], int nrhs, mxArray const * prhs[])
 			"Argument %d must be a 3 dimension GPUarray of double precision!",
 			level_set_function);
 	}
-
+	// finish assigning level set function
 
 	// assign grid spacing array
 	double *ds;
@@ -143,6 +143,7 @@ void mexFunction(int nlhs , mxArray *plhs[], int nrhs, mxArray const * prhs[])
      * data. These must be destroyed before leaving the MEX function.
      */
 	mxGPUDestroyGPUArray(lsf);
+	mxGPUDestroyGPUArray(re_lsf);
 	mxGPUDestroyGPUArray(xpr);
 	mxGPUDestroyGPUArray(ypf);
 	mxGPUDestroyGPUArray(zpu);
