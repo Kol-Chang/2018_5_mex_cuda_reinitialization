@@ -152,7 +152,7 @@ void mexFunction(int nlhs , mxArray *plhs[], int nrhs, mxArray const * prhs[])
 	mxGPUDestroyGPUArray(zpu);
 	mxGPUDestroyGPUArray(new_lsf);
 	mxGPUDestroyGPUArray(intermediate_lsf);
-	mxGPUDestroyGPUArray(cur_lsf);
+	//mxGPUDestroyGPUArray(cur_lsf);
 }
 
 
