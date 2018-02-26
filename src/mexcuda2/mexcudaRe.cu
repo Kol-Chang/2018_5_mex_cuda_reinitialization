@@ -51,6 +51,7 @@ void mexFunction(int nlhs , mxArray *plhs[], int nrhs, mxArray const * prhs[])
 			level_set_function);
 	}
 
+
 	// assign grid spacing array
 	double *ds;
 	size_t rows, cols;
