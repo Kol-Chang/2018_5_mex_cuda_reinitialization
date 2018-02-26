@@ -76,8 +76,8 @@ void boundary_correction(double * const dev_xpr, double * const dev_ypf, double 
 	dev_cur_lsf[idx] = dev_lsf[idx]; // initialize current lsf
 
 	double f0 = dev_lsf[idx]; // grab the current/left/back/lower node
+	
 	// fill in dev_xpr and make correction near boundary
-
 	dev_xpr[idx] = dx;
 	//int idx_right = sub2ind(row_idx, (col_idx < (cols-1)) ? col_idx+1 : col_idx+1-cols, pge_idx, rows, cols, pages );	
 	int idx_right = sub2ind(row_idx, (col_idx < (cols-1)) ? col_idx+1 : cols, pge_idx, rows, cols, pages );	
@@ -329,14 +329,11 @@ void Reinitialization(double * dev_re_lsf, double const * const dev_lsf,
 
 	int dimx = rows, dimy = 4, dimz = 1;
 	dim3 const thread(dimx, dimy, dimz);
-	dim3 const block(	(rows + thread.x - 1) / thread.x, 
-						(cols + thread.y - 1) / thread.y, 
+	dim3 const block(	(rows + thread.x - 1)  / thread.x, 
+						(cols + thread.y - 1)  / thread.y, 
 						(pages + thread.z - 1) / thread.z);
 
 	
-	explore<<<block, thread>>>(dev_re_lsf, dev_lsf, number_of_elements_lsf, rows, cols, pages);
-
-
 	// fill in dev_xpr,ypf,zpu
 	
 	//boundary_correction<<<block, thread>>>(dev_xpr, dev_ypf, dev_zpu, 
@@ -344,7 +341,7 @@ void Reinitialization(double * dev_re_lsf, double const * const dev_lsf,
 	//	number_of_elements_lsf, rows, cols, pages, dx, dy, dz);
 
 	boundary_correction<<<block, thread>>>(dev_xpr, dev_ypf, dev_zpu, 
-		dev_lsf, dev_re_lsf,
+		dev_lsf, dev_cur_lsf,
 		number_of_elements_lsf, rows, cols, pages, dx, dy, dz);
 
 	// iteration
@@ -354,7 +351,7 @@ void Reinitialization(double * dev_re_lsf, double const * const dev_lsf,
 		//	dev_xpr, dev_ypf, dev_zpu, 
 		//	number_of_elements_lsf, rows, cols, pages, dx, dy, dz, true); 	
 
-		time_step_lsf<<<block, thread>>>(dev_new_lsf, dev_intermediate_lsf, dev_re_lsf, dev_lsf, 
+		time_step_lsf<<<block, thread>>>(dev_new_lsf, dev_intermediate_lsf, dev_cur_lsf, dev_lsf, 
 			dev_xpr, dev_ypf, dev_zpu, 
 			number_of_elements_lsf, rows, cols, pages, dx, dy, dz, true); 	
 
@@ -363,13 +360,13 @@ void Reinitialization(double * dev_re_lsf, double const * const dev_lsf,
 		//	dev_xpr, dev_ypf, dev_zpu, 
 		//	number_of_elements_lsf, rows, cols, pages, dx, dy, dz, false);
 
-		time_step_lsf<<<block, thread>>>(dev_new_lsf, dev_re_lsf, dev_intermediate_lsf, dev_lsf, 
+		time_step_lsf<<<block, thread>>>(dev_new_lsf, dev_cur_lsf, dev_intermediate_lsf, dev_lsf, 
 			dev_xpr, dev_ypf, dev_zpu, 
 			number_of_elements_lsf, rows, cols, pages, dx, dy, dz, false); 
 
 		//cudaDeviceSynchronize();
 		//std::swap(dev_new_lsf,dev_cur_lsf);
-		std::swap(dev_new_lsf,dev_re_lsf);
+		std::swap(dev_new_lsf,dev_cur_lsf);
 
 	}
 
