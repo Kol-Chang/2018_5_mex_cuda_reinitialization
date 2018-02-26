@@ -341,7 +341,7 @@ void Reinitialization(double * dev_re_lsf, double const * const dev_lsf,
 	//	number_of_elements_lsf, rows, cols, pages, dx, dy, dz);
 
 	boundary_correction<<<block, thread>>>(dev_xpr, dev_ypf, dev_zpu, 
-		dev_lsf, dev_cur_lsf,
+		dev_lsf, dev_re_lsf,
 		number_of_elements_lsf, rows, cols, pages, dx, dy, dz);
 
 	// iteration
@@ -354,7 +354,7 @@ void Reinitialization(double * dev_re_lsf, double const * const dev_lsf,
 		//	dev_xpr, dev_ypf, dev_zpu, 
 		//	number_of_elements_lsf, rows, cols, pages, dx, dy, dz, true); 	
 
-		time_step_lsf<<<block, thread>>>(dev_new_lsf, dev_intermediate_lsf, dev_cur_lsf, dev_lsf, 
+		time_step_lsf<<<block, thread>>>(dev_new_lsf, dev_intermediate_lsf, dev_re_lsf, dev_lsf, 
 			dev_xpr, dev_ypf, dev_zpu, 
 			number_of_elements_lsf, rows, cols, pages, dx, dy, dz, true); 	
 
@@ -363,13 +363,13 @@ void Reinitialization(double * dev_re_lsf, double const * const dev_lsf,
 		//	dev_xpr, dev_ypf, dev_zpu, 
 		//	number_of_elements_lsf, rows, cols, pages, dx, dy, dz, false);
 
-		time_step_lsf<<<block, thread>>>(dev_new_lsf, dev_cur_lsf, dev_intermediate_lsf, dev_lsf, 
+		time_step_lsf<<<block, thread>>>(dev_new_lsf, dev_re_lsf, dev_intermediate_lsf, dev_lsf, 
 			dev_xpr, dev_ypf, dev_zpu, 
 			number_of_elements_lsf, rows, cols, pages, dx, dy, dz, false); 
 
 		//cudaDeviceSynchronize();
 		//std::swap(dev_new_lsf,dev_cur_lsf);
-		//std::swap(dev_new_lsf,dev_cur_lsf);
+		std::swap(dev_new_lsf,dev_re_lsf);
 
 		//copy_array<<<block,thread>>>(dev_cur_lsf,dev_new_lsf,number_of_elements_lsf,rows,cols,pages);
 
