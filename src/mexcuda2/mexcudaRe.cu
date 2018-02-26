@@ -28,7 +28,8 @@ void mexFunction(int nlhs , mxArray *plhs[], int nrhs, mxArray const * prhs[])
 
     if(nrhs != 2){
 		mexErrMsgIdAndTxt("mexReinitialization:wrong_number_of_inputs",
-			"expecting 2 inputs");
+			"expecting 2 inputs: a 3d array representing level set function 
+			and a 1x3 array representing grid spacing");
 	}
 
 	// assign level set function
