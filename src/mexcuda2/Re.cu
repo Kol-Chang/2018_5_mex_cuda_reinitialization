@@ -369,7 +369,9 @@ void Reinitialization(double * dev_re_lsf, double const * const dev_lsf,
 
 		//cudaDeviceSynchronize();
 		//std::swap(dev_new_lsf,dev_cur_lsf);
-		std::swap(dev_new_lsf,dev_cur_lsf);
+		//std::swap(dev_new_lsf,dev_cur_lsf);
+
+		copy_array<<<block,thread>>>(dev_cur_lsf,dev_new_lsf,number_of_elements_lsf,rows,cols,pages);
 
 	}
 
