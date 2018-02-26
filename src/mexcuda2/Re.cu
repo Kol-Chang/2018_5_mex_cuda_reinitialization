@@ -345,7 +345,7 @@ void Reinitialization(double * dev_re_lsf, double const * const dev_lsf,
 		number_of_elements_lsf, rows, cols, pages, dx, dy, dz);
 
 	// iteration
-	for(int i = 0;i < 0; ++i){
+	for(int i = 0;i < 1; ++i){
 
 		mexPrintf("%d\n",i);
 
