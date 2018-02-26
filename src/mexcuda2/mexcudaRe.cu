@@ -135,6 +135,7 @@ void mexFunction(int nlhs , mxArray *plhs[], int nrhs, mxArray const * prhs[])
     //plhs[reinitialized_lsf] = mxGPUCreateMxArrayOnGPU(re_lsf);
 
 	/* Wrap the result up as a MATLAB cpuArray for return. */
+	mexPrintf("trying to return a cpu array \n");
     plhs[reinitialized_lsf] = mxGPUCreateMxArrayOnCPU(cur_lsf);
 
     /*
