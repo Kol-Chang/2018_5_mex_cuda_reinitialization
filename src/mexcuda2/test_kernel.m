@@ -22,7 +22,9 @@ xpr = zeros(size(F),'gpuArray');
 ypf = xpr;
 zpu = xpr;
 
-F_cur = F_g;
+new_F = F_g;
+inter_F = F_g;
+cur_F = F_g;
 
 nel = prod(size(F));
 [rows,cols,pages] = size(F);
@@ -39,5 +41,8 @@ b_c.GridSize = GridSize;
 tsl.ThreadBlockSize = ThreadBlockSize;
 tsl.GridSize = GridSize;
 
+%
+%[xpr,ypf,zpu,F_cur] = feval(b_c, xpr, ypf, zpu, F_g, cur_F, nel, rows, cols, pages, dx, dy, dz);
 
-
+[new_F, inter_F, cur_F] = feval(tsl, new_F, inter_F, cur_F, F_g, ...
+	xpr, ypf, zpu, nel, rows, cols, pages, dx, dy, dz, true);
