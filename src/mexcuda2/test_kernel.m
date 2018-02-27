@@ -24,8 +24,11 @@ zpu = xpr;
 
 F_cur = F_g;
 
-nel = product(size(F));
+nel = prod(size(F));
 [rows,cols,pages] = size(F);
 
+b_c = parallel.gpu.CUDAKernel('Ke.ptx','Ke.cu','boundary_correction');
+tsl = parallel.gpu.CUDAKernel('Ke.ptx','Ke.cu','time_step_lsf');
 
+ThreadBlockSize = [rows,]
 
