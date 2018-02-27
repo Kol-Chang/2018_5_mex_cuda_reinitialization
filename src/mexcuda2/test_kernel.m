@@ -30,5 +30,14 @@ nel = prod(size(F));
 b_c = parallel.gpu.CUDAKernel('Ke.ptx','Ke.cu','boundary_correction');
 tsl = parallel.gpu.CUDAKernel('Ke.ptx','Ke.cu','time_step_lsf');
 
-ThreadBlockSize = [rows,]
+ThreadBlockSize = [rows,4,1];
+GridSize = [1,16,64];
+
+b_c.ThreadBlockSize = ThreadBlockSize;
+b_c.GridSize = GridSize;
+
+tsl.ThreadBlockSize = ThreadBlockSize;
+tsl.GridSize = GridSize;
+
+
 
