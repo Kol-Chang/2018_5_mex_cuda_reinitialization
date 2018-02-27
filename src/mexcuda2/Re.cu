@@ -339,6 +339,8 @@ void Reinitialization(double * dev_re_lsf, double const * const dev_lsf,
 
 	explore<<<block,thread>>>(dev_re_lsf,dev_lsf,number_of_elements_lsf,rows,cols,pages);
 
+	mxInitGPU();
+
 	boundary_correction<<<block, thread>>>(dev_xpr, dev_ypf, dev_zpu, 
 		dev_lsf, dev_re_lsf,
 		number_of_elements_lsf, rows, cols, pages, dx, dy, dz);
