@@ -337,7 +337,7 @@ void Reinitialization(double * dev_re_lsf, double const * const dev_lsf,
 
 	// fill in dev_xpr,ypf,zpu
 
-	explore<<<block,thread>>>(dev_re_lsf,dev_lsf,number_of_elements_lsf,rows,cols,pages);
+	//explore<<<block,thread>>>(dev_re_lsf,dev_lsf,number_of_elements_lsf,rows,cols,pages);
 
 	mxInitGPU();
 
