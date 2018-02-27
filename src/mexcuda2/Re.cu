@@ -144,7 +144,7 @@ void boundary_correction(double * const dev_xpr, double * const dev_ypf, double 
 		if(p2>epislon){
 			dev_zpu[idx] = dist(discriminant(p2,f0,f2),dz,p2,f0,f2);
 		}else{
-			dev_zpf[idx] = dist_turn(dz,f0,f2);
+			dev_zpu[idx] = dist_turn(dz,f0,f2);
 		}
 	}
 }
