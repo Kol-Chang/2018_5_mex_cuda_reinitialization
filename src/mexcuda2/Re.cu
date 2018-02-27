@@ -334,11 +334,10 @@ void Reinitialization(double * dev_re_lsf, double const * const dev_lsf,
 						(pages + thread.z - 1) / thread.z);
 
 	
+
 	// fill in dev_xpr,ypf,zpu
-	
-	//boundary_correction<<<block, thread>>>(dev_xpr, dev_ypf, dev_zpu, 
-	//	dev_lsf, dev_cur_lsf,
-	//	number_of_elements_lsf, rows, cols, pages, dx, dy, dz);
+
+	explore<<<block,thread>>>(dev_re_lsf,dev_lsf,number_of_elements_lsf,rows,cols,pages);
 
 	boundary_correction<<<block, thread>>>(dev_xpr, dev_ypf, dev_zpu, 
 		dev_lsf, dev_re_lsf,
